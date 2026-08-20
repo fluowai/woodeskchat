@@ -1,0 +1,127 @@
+{
+  "AGENT_MGMT": {
+    "HEADER": "Atendentes",
+    "HEADER_BTN_TXT": "Adicionar Atendente",
+    "LOADING": "Buscando lista de atendente",
+    "DESCRIPTION": "Um atendente é um membro de seu time de atendimento ao cliente que pode visualizar e responder às mensagens de usuários. A lista abaixo mostra todos os atendentes de sua conta.",
+    "LEARN_MORE": "Saiba mais sobre as funções do usuário",
+    "AGENT_TYPES": {
+      "ADMINISTRATOR": "Administrador",
+      "AGENT": "Atendente"
+    },
+    "COUNT": "{n} atendente | {n} atendentes",
+    "LIST": {
+      "404": "Não existem atendentes associados a esta conta",
+      "TITLE": "Gerenciar atendentes de seu time",
+      "DESC": "Você pode adicionar e/ou remover atendentes de um time.",
+      "NAME": "Nome",
+      "EMAIL": "E-mail",
+      "STATUS": "Status",
+      "ACTIONS": "Ações",
+      "VERIFIED": "Verificado",
+      "VERIFICATION_PENDING": "Verificação Pendente",
+      "AVAILABLE_CUSTOM_ROLE": "Permissões de função personalizada disponíveis"
+    },
+    "ADD": {
+      "TITLE": "Adicionar atendente a seu time",
+      "DESC": "Você pode adicionar pessoas que poderão acompanhar o suporte de suas caixas de entrada.",
+      "CANCEL_BUTTON_TEXT": "Cancelar",
+      "FORM": {
+        "NAME": {
+          "LABEL": "Nome do Atendente",
+          "PLACEHOLDER": "Por favor, insira o nome do atendente"
+        },
+        "AGENT_TYPE": {
+          "LABEL": "Função",
+          "PLACEHOLDER": "Selecione uma função",
+          "ERROR": "É necessária uma função"
+        },
+        "EMAIL": {
+          "LABEL": "Endereço de e-mail",
+          "PLACEHOLDER": "Por favor, insira um endereço de e-mail do atendente"
+        },
+        "SUBMIT": "Adicionar atendente"
+      },
+      "API": {
+        "SUCCESS_MESSAGE": "Atendente adicionado com sucesso",
+        "EXIST_MESSAGE": "O E-mail do informado já está uso, por favor tente outro endereço de e-mail",
+        "ERROR_MESSAGE": "Não foi possível conectar ao servidor Woot, por favor tente novamente mais tarde"
+      }
+    },
+    "DELETE": {
+      "BUTTON_TEXT": "Excluir",
+      "API": {
+        "SUCCESS_MESSAGE": "Atendente excluído com sucesso",
+        "ERROR_MESSAGE": "Não foi possível conectar ao servidor Woot, por favor tente novamente mais tarde"
+      },
+      "CONFIRM": {
+        "TITLE": "Confirmar exclusão",
+        "MESSAGE": "Você tem certeza que deseja excluir ",
+        "YES": "Sim, excluir ",
+        "NO": "Não, Mantenha "
+      }
+    },
+    "EDIT": {
+      "TITLE": "Editar Atendente",
+      "FORM": {
+        "NAME": {
+          "LABEL": "Nome do Atendente",
+          "PLACEHOLDER": "Por favor, insira um nome do atendente"
+        },
+        "AGENT_TYPE": {
+          "LABEL": "Função",
+          "PLACEHOLDER": "Selecione uma função",
+          "ERROR": "É necessária uma função"
+        },
+        "EMAIL": {
+          "LABEL": "Endereço de email",
+          "PLACEHOLDER": "Por favor, insira um endereço de e-mail do atendente"
+        },
+        "AGENT_AVAILABILITY": {
+          "LABEL": "Disponibilidade",
+          "PLACEHOLDER": "Por favor, selecione a disponibilidade do atendente",
+          "ERROR": "A disponibilidade é necessária"
+        },
+        "SUBMIT": "Editar atendente"
+      },
+      "BUTTON_TEXT": "Alterar",
+      "CANCEL_BUTTON_TEXT": "Cancelar",
+      "API": {
+        "SUCCESS_MESSAGE": "Atendente atualizado com sucesso",
+        "ERROR_MESSAGE": "Não foi possível conectar ao servidor Woot, por favor tente novamente mais tarde"
+      },
+      "PASSWORD_RESET": {
+        "ADMIN_RESET_BUTTON": "Redefinir a senha",
+        "ADMIN_SUCCESS_MESSAGE": "Um e-mail com instruções de redefinição de senha foi enviado para o atendente",
+        "SUCCESS_MESSAGE": "Senha do atendente redefinida com sucesso",
+        "ERROR_MESSAGE": "Não foi possível conectar ao servidor Woot, por favor tente novamente mais tarde"
+      }
+    },
+    "SEARCH_PLACEHOLDER": "Pesquisar atendentes...",
+    "NO_RESULTS": "Nenhum atendente encontrado correspondente à sua busca",
+    "SEARCH": {
+      "NO_RESULTS": "Nenhum resultado encontrado."
+    },
+    "MULTI_SELECTOR": {
+      "PLACEHOLDER": "Nenhum",
+      "TITLE": {
+        "AGENT": "Selecionar atendente",
+        "TEAM": "Selecionar time"
+      },
+      "LIST": {
+        "NONE": "Nenhum"
+      },
+      "SEARCH": {
+        "NO_RESULTS": {
+          "AGENT": "Nenhum atendente encontrado",
+          "TEAM": "Nenhum time encontrado"
+        },
+        "PLACEHOLDER": {
+          "AGENT": "Pesquisar atendentes",
+          "TEAM": "Pesquisar times",
+          "INPUT": "Pesquisar por atendentes"
+        }
+      }
+    }
+  }
+}

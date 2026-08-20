@@ -1,0 +1,146 @@
+version: "3.8"
+
+# ---------------------------------------------------------------------------
+# docker-compose.supabase.yaml
+# Production stack for Chatwoot running against EXTERNAL managed services:
+#   - PostgreSQL  (Supabase, incl. pgvector extension)            -> DATABASE_URL
+#   - Redis       (Upstash, serverless)                            -> REDIS_URL
+#   - Reverse TLS (Caddy 2, auto Let's Encrypt)                    -> CADDY_DOMAIN / CADDY_EMAIL
+#
+# No PostgreSQL or Redis containers run in this stack (nada de banco na stack).
+# Build/asset compilation is already baked into the published `chatwoot/chatwoot` image
+# (docker/Dockerfile multi-stage). This compose only orchestrates runtime containers.
+# ---------------------------------------------------------------------------
+
+services:
+  # One-shot database migration/initialization job.
+  # Runs db:chatwoot_prepare (schema load + seed for fresh DB, or migrate for existing)
+  # against the Supabase database. Web/worker containers wait for it to finish.
+  migrate:
+    image: ${CHATWOOT_IMAGE:-chatwoot/chatwoot:latest}
+    env_file: .env.supabase
+    environment:
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+      - DATABASE_URL
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_USERNAME
+      - POSTGRES_PASSWORD
+      - POSTGRES_DATABASE
+    command: ["bundle", "exec", "rails", "db:chatwoot_prepare"]
+    restart: "no"
+
+  # TLS-terminating reverse proxy. Caddy provisions Let's Encrypt certs automatically.
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      rails:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+    env_file: .env.supabase
+    environment:
+      - CADDY_DOMAIN
+      - CADDY_EMAIL
+      - CADDY_RAILS_HOST=rails
+      - CADDY_RAILS_PORT=3000
+
+  # Web server (Puma). Serves HTTP + ActionCable (WebSocket) in-process.
+  # Static assets are served by Rails (RAILS_SERVE_STATIC_FILES=true, baked in image).
+  rails:
+    image: ${CHATWOOT_IMAGE:-chatwoot/chatwoot:latest}
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    env_file: .env.supabase
+    environment:
+      - RAILS_ENV=production
+      - NODE_ENV=production
+      - INSTALLATION_ENV=docker
+      # Tuning (adjust per traffic). pool = RAILS_MAX_THREADS per puma worker.
+      - WEB_CONCURRENCY=${WEB_CONCURRENCY:-2}
+      - RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-5}
+      - RAILS_MIN_THREADS=${RAILS_MIN_THREADS:-5}
+      # Upstream services (managed, external)
+      - DATABASE_URL
+      - REDIS_URL
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_USERNAME
+      - POSTGRES_PASSWORD
+      - POSTGRES_DATABASE
+      # App identity
+      - FRONTEND_URL
+      - SECRET_KEY_BASE
+    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+    healthcheck:
+      test: ["CMD", "ruby", "-e", "require 'net/http'; require 'uri'; r=Net::HTTP.get_response(URI('http://127.0.0.1:3000/health')); exit(r && r.code=='200' ? 0 : 1) rescue exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  # Sidekiq — background jobs. Partitioned by queue priority into two workers.
+  # critical: webhooks, conversations, auth, mailers (latency-sensitive).
+  sidekiq-critical:
+    image: ${CHATWOOT_IMAGE:-chatwoot/chatwoot:latest}
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    env_file: .env.supabase
+    environment:
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+      - DATABASE_URL
+      - REDIS_URL
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_USERNAME
+      - POSTGRES_PASSWORD
+      - POSTGRES_DATABASE
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml", "-q", "critical", "-q", "high", "-q", "default", "-q", "mailers"]
+    healthcheck:
+      test: ["CMD", "bundle", "exec", "ruby", "-e", "require 'redis'; exit(Redis.new(url: ENV.fetch('REDIS_URL')).ping == 'PONG' ? 0 : 1) rescue exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # low: housekeeping, storage analysis/purge, bulk reindex, scheduled jobs (tolerates delay).
+  sidekiq-low:
+    image: ${CHATWOOT_IMAGE:-chatwoot/chatwoot:latest}
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    env_file: .env.supabase
+    environment:
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+      - DATABASE_URL
+      - REDIS_URL
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_USERNAME
+      - POSTGRES_PASSWORD
+      - POSTGRES_DATABASE
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml", "-q", "low", "-q", "housekeeping", "-q", "scheduled_jobs", "-q", "bulk_reindex_low", "-q", "active_storage_analysis", "-q", "active_storage_purge"]
+    healthcheck:
+      test: ["CMD", "bundle", "exec", "ruby", "-e", "require 'redis'; exit(Redis.new(url: ENV.fetch('REDIS_URL')).ping == 'PONG' ? 0 : 1) rescue exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+volumes:
+  caddy_data:
+  caddy_config:

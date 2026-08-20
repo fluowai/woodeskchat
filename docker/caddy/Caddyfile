@@ -1,0 +1,38 @@
+# Caddyfile — Reverse proxy with automatic HTTPS (Let's Encrypt).
+# Env vars substituted by docker-compose: CADDY_DOMAIN, CADDY_EMAIL.
+
+{
+    # Global notification email used for ACME certificate issuance / renewal.
+    email {$CADDY_EMAIL}
+    # Production-grade logging to stdout (container-collected).
+    log {
+        output stdout
+        format console
+    }
+}
+
+{$CADDY_DOMAIN} {
+    # Security headers (HSTS only meaningful because Caddy enforces TLS).
+    header {
+        Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "SAMEORIGIN"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # CSP: allow self + widget inline assets; tighten as needed.
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' https: data:; connect-src 'self' wss: https:; frame-ancestors 'self'; object-src 'none'"
+    }
+
+    encode gzip
+
+    # ActionCable WebSocket endpoint (Caddy 2 upgrades websockets automatically).
+    reverse_proxy /cable {$CADDY_RAILS_HOST}:{$CADDY_RAILS_PORT}
+
+    # Precompiled assets (served by Rails in the image via RAILS_SERVE_STATIC_FILES=true;
+    # proxied here. Fase B: mount a shared assets volume so Caddy serves them directly).
+    reverse_proxy /packs/* {$CADDY_RAILS_HOST}:{$CADDY_RAILS_PORT}
+    reverse_proxy /assets/* {$CADDY_RAILS_HOST}:{$CADDY_RAILS_PORT}
+    reverse_proxy /vite/* {$CADDY_RAILS_HOST}:{$CADDY_RAILS_PORT}
+
+    # Everything else -> Rails (API, dashboard, widget).
+    reverse_proxy {$CADDY_RAILS_HOST}:{$CADDY_RAILS_PORT}
+}

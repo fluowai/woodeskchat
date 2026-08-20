@@ -1,0 +1,40 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "allowJs": true,
+    "checkJs": false,
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "sourceMap": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": ["vite/client"],
+    "baseUrl": ".",
+    "paths": {
+      "vue": ["node_modules/vue/dist/vue.esm-bundler.js"],
+      "components": ["app/javascript/dashboard/components"],
+      "next": ["app/javascript/dashboard/components-next"],
+      "v3": ["app/javascript/v3"],
+      "dashboard": ["app/javascript/dashboard"],
+      "helpers": ["app/javascript/shared/helpers"],
+      "shared": ["app/javascript/shared"],
+      "survey": ["app/javascript/survey"],
+      "widget": ["app/javascript/widget"],
+      "assets": ["app/javascript/dashboard/assets"]
+    }
+  },
+  "include": [
+    "vite.config.ts",
+    "vite.lib.config.ts",
+    "vite.shared.ts",
+    "app/javascript/**/*.ts",
+    "app/javascript/**/*.vue",
+    "app/javascript/**/*.js"
+  ],
+  "exclude": ["node_modules", "public", "dist", "vendor"]
+}
