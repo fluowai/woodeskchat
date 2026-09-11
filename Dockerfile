@@ -1,1 +1,1 @@
-FROM ghcr.io/chatwoot/chatwoot:latest
+FROM chatwoot/chatwoot:latest
