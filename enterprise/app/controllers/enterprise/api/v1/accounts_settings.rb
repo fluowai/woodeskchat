@@ -7,8 +7,8 @@ module Enterprise::Api::V1::AccountsSettings
   private
 
   # The upgrade banner is a self-hosted nudge; the managed cloud instance is always current.
-  def latest_chatwoot_version
-    return if ChatwootApp.chatwoot_cloud?
+  def latest_woodesk_version
+    return if WoodeskApp.woodesk_cloud?
 
     super
   end
@@ -19,7 +19,7 @@ module Enterprise::Api::V1::AccountsSettings
 
     Internal::Accounts::MarketingAttributionService.new(account: @account, cookies: cookies).perform
   rescue StandardError => e
-    ChatwootExceptionTracker.new(e).capture_exception
+    WoodeskExceptionTracker.new(e).capture_exception
   end
 
   def permitted_settings_attributes

@@ -60,7 +60,7 @@ module Enterprise::Account
 
   def captain_document_sync_interval(sync_intervals = Enterprise::Account.captain_document_sync_intervals)
     plan = custom_attributes['plan_name']
-    plan = 'enterprise' if plan.blank? && ChatwootApp.self_hosted_enterprise?
+    plan = 'enterprise' if plan.blank? && WoodeskApp.self_hosted_enterprise?
     return nil if plan.blank?
 
     interval_hours = sync_intervals[plan.downcase]
@@ -74,7 +74,7 @@ module Enterprise::Account
   end
 
   def api_and_webhooks_enabled?
-    return true unless ChatwootApp.chatwoot_cloud?
+    return true unless WoodeskApp.woodesk_cloud?
 
     feature_enabled?('api_and_webhooks')
   end
@@ -107,9 +107,9 @@ module Enterprise::Account
 
   def enable_default_features
     super
-    if ChatwootApp.self_hosted_enterprise?
+    if WoodeskApp.self_hosted_enterprise?
       enable_features('captain_integration', 'captain_integration_v2')
-    elsif ChatwootApp.chatwoot_cloud?
+    elsif WoodeskApp.woodesk_cloud?
       internal_attributes[CAPTAIN_V2_DEFAULT_ELIGIBLE] = true
     end
   end

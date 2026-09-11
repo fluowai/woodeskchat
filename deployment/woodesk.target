@@ -1,0 +1,5 @@
+[Unit]
+Wants=woodesk-web.1.service woodesk-worker.1.service
+
+[Install]
+WantedBy=multi-user.target

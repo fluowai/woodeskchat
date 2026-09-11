@@ -4,7 +4,7 @@ import { useAlert } from 'dashboard/composables';
 import { useI18n } from 'vue-i18n';
 import { DirectUpload } from 'activestorage';
 import { checkFileSizeLimit } from 'shared/helpers/FileHelper';
-import { getMaxUploadSizeByChannel } from '@chatwoot/utils';
+import { getMaxUploadSizeByChannel } from '@@WOODESK_UTILS_DEP@@';
 
 vi.mock('dashboard/composables/store');
 vi.mock('dashboard/composables', () => ({
@@ -17,7 +17,7 @@ vi.mock('shared/helpers/FileHelper', () => ({
   resolveMaximumFileUploadSize: vi.fn(value => Number(value) || 40),
   DEFAULT_MAXIMUM_FILE_UPLOAD_SIZE: 40,
 }));
-vi.mock('@chatwoot/utils');
+vi.mock('@@WOODESK_UTILS_DEP@@');
 
 describe('useFileUpload', () => {
   const mockAttachFile = vi.fn();

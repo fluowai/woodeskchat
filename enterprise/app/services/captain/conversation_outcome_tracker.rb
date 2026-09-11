@@ -119,7 +119,7 @@ class Captain::ConversationOutcomeTracker
   def safely_track(action, at:)
     yield
   rescue StandardError => e
-    ChatwootExceptionTracker.new(e, account: account).capture_exception
+    WoodeskExceptionTracker.new(e, account: account).capture_exception
     Rails.logger.error(
       "[CAPTAIN][ConversationOutcomeTracker] Failed to record #{action} for conversation=#{conversation.display_id} " \
       "at=#{at.iso8601(6)}: #{e.message}"

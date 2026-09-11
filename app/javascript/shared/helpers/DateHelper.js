@@ -3,10 +3,11 @@ import format from 'date-fns/format';
 import isToday from 'date-fns/isToday';
 import isYesterday from 'date-fns/isYesterday';
 import { endOfDay, getUnixTime, startOfDay } from 'date-fns';
+import { locale as ptBR, formats as brFormats } from './brLocale';
 
-export const formatUnixDate = (date, dateFormat = 'MMM dd, yyyy') => {
+export const formatUnixDate = (date, dateFormat = brFormats.date) => {
   const unixDate = fromUnixTime(date);
-  return format(unixDate, dateFormat);
+  return format(unixDate, dateFormat, { locale: ptBR });
 };
 
 export const formatDate = ({ date, todayText, yesterdayText }) => {

@@ -1,6 +1,6 @@
 <script setup>
 import { computed, getCurrentInstance, ref, useTemplateRef } from 'vue';
-import { downloadFile } from '@chatwoot/utils';
+import { downloadFile } from '@@WOODESK_UTILS_DEP@@';
 import { useEmitter } from 'dashboard/composables/emitter';
 import { emitter } from 'shared/helpers/mitt';
 import Button from 'dashboard/components-next/button/Button.vue';

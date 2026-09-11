@@ -1,14 +1,14 @@
-import { processVariable, buildWhatsAppProcessedParams } from '@chatwoot/utils';
+import { processVariable, buildWhatsAppProcessedParams } from '@@WOODESK_UTILS_DEP@@';
 
 // Constants and pure template helpers are shared with the mobile app via
-// @chatwoot/utils so the logic lives in one place.
+// @@WOODESK_UTILS_DEP@@ so the logic lives in one place.
 export {
   MEDIA_FORMATS,
   COMPONENT_TYPES,
   findComponentByType,
   processVariable,
   renderTemplatePreview,
-} from '@chatwoot/utils';
+} from '@@WOODESK_UTILS_DEP@@';
 
 export const DEFAULT_LANGUAGE = 'en';
 export const DEFAULT_CATEGORY = 'UTILITY';

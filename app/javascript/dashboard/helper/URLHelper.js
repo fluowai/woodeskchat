@@ -127,8 +127,8 @@ export const getHostNameFromURL = url => {
   }
 };
 
-// Shared with the mobile app via @chatwoot/utils.
-export { extractFilenameFromUrl } from '@chatwoot/utils';
+// Shared with the mobile app via @@WOODESK_UTILS_DEP@@.
+export { extractFilenameFromUrl } from '@@WOODESK_UTILS_DEP@@';
 
 /**
  * Normalizes a comma/newline separated list of domains

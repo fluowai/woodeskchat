@@ -66,7 +66,7 @@ RSpec.describe 'Api::V1::Accounts::Captain::Assistants', type: :request do
           response_guidelines: ['Be helpful', 'Be concise'],
           guardrails: ['No harmful content', 'Stay on topic'],
           config: {
-            product_name: 'Chatwoot',
+            product_name: 'Woodesk',
             feature_faq: true,
             feature_memory: false,
             feature_citation: true
@@ -106,7 +106,7 @@ RSpec.describe 'Api::V1::Accounts::Captain::Assistants', type: :request do
         expect(json_response[:name]).to eq('New Assistant')
         expect(json_response[:response_guidelines]).to eq(['Be helpful', 'Be concise'])
         expect(json_response[:guardrails]).to eq(['No harmful content', 'Stay on topic'])
-        expect(json_response[:config][:product_name]).to eq('Chatwoot')
+        expect(json_response[:config][:product_name]).to eq('Woodesk')
         expect(json_response[:config][:feature_citation]).to be(true)
         expect(response).to have_http_status(:success)
       end
@@ -244,7 +244,7 @@ RSpec.describe 'Api::V1::Accounts::Captain::Assistants', type: :request do
       end
 
       it 'updates auto_resolve_mode without replacing other config' do
-        assistant.update!(config: { 'product_name' => 'Chatwoot', 'auto_resolve_mode' => 'legacy' })
+        assistant.update!(config: { 'product_name' => 'Woodesk', 'auto_resolve_mode' => 'legacy' })
 
         patch "/api/v1/accounts/#{account.id}/captain/assistants/#{assistant.id}",
               params: { assistant: { config: { auto_resolve_mode: 'disabled' } } },
@@ -252,7 +252,7 @@ RSpec.describe 'Api::V1::Accounts::Captain::Assistants', type: :request do
               as: :json
 
         expect(response).to have_http_status(:success)
-        expect(assistant.reload.config).to include('product_name' => 'Chatwoot', 'auto_resolve_mode' => 'disabled')
+        expect(assistant.reload.config).to include('product_name' => 'Woodesk', 'auto_resolve_mode' => 'disabled')
       end
 
       it 'keeps inactivity timer settings behind Captain V2' do

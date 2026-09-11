@@ -78,10 +78,10 @@ RSpec.describe Captain::Assistant::SessionCaptureService do
 
     it 'reports failures without raising' do
       allow(Captain::AgentSession).to receive(:create!).and_raise(StandardError, 'capture failed')
-      allow(ChatwootExceptionTracker).to receive(:new).and_call_original
+      allow(WoodeskExceptionTracker).to receive(:new).and_call_original
 
       expect { service.capture }.not_to raise_error
-      expect(ChatwootExceptionTracker).to have_received(:new)
+      expect(WoodeskExceptionTracker).to have_received(:new)
     end
   end
 

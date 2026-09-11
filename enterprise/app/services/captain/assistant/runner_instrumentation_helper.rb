@@ -4,7 +4,7 @@ module Captain::Assistant::RunnerInstrumentationHelper
   private
 
   def install_instrumentation(runner)
-    return unless ChatwootApp.otel_enabled?
+    return unless WoodeskApp.otel_enabled?
 
     Agents::Instrumentation.install(
       runner,
@@ -46,9 +46,9 @@ module Captain::Assistant::RunnerInstrumentationHelper
     if message_burst_protection_active?
       runner.on_run_complete do |_agent_name, _result, context_wrapper|
         @response_discarded = newer_customer_message_arrived?
-        write_run_metadata(context_wrapper) if ChatwootApp.otel_enabled?
+        write_run_metadata(context_wrapper) if WoodeskApp.otel_enabled?
       end
-    elsif ChatwootApp.otel_enabled?
+    elsif WoodeskApp.otel_enabled?
       runner.on_run_complete do |_agent_name, _result, context_wrapper|
         write_credits_used_metadata(context_wrapper)
       end

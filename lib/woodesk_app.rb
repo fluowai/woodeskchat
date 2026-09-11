@@ -2,7 +2,7 @@
 
 require 'pathname'
 
-module ChatwootApp
+module WoodeskApp
   def self.root
     Pathname.new(File.expand_path('..', __dir__))
   end
@@ -17,12 +17,12 @@ module ChatwootApp
     @enterprise ||= root.join('enterprise').exist?
   end
 
-  def self.chatwoot_cloud?
+  def self.woodesk_cloud?
     enterprise? && GlobalConfig.get_value('DEPLOYMENT_ENV') == 'cloud'
   end
 
   def self.self_hosted_enterprise?
-    enterprise? && !chatwoot_cloud? && GlobalConfig.get_value('INSTALLATION_PRICING_PLAN') == 'enterprise'
+    enterprise? && !woodesk_cloud? && GlobalConfig.get_value('INSTALLATION_PRICING_PLAN') == 'enterprise'
   end
 
   def self.custom?

@@ -2,22 +2,22 @@ version: "3.8"
 
 # ---------------------------------------------------------------------------
 # docker-compose.supabase.yaml
-# Production stack for Chatwoot running against EXTERNAL managed services:
+# Production stack for Woodesk running against EXTERNAL managed services:
 #   - PostgreSQL  (Supabase, incl. pgvector extension)            -> DATABASE_URL
 #   - Redis       (Upstash, serverless)                            -> REDIS_URL
 #   - Reverse TLS (Caddy 2, auto Let's Encrypt)                    -> CADDY_DOMAIN / CADDY_EMAIL
 #
 # No PostgreSQL or Redis containers run in this stack (nada de banco na stack).
-# Build/asset compilation is already baked into the published `chatwoot/chatwoot` image
+# Build/asset compilation is already baked into the published `woodesk/chat` image
 # (docker/Dockerfile multi-stage). This compose only orchestrates runtime containers.
 # ---------------------------------------------------------------------------
 
 services:
   # One-shot database migration/initialization job.
-  # Runs db:chatwoot_prepare (schema load + seed for fresh DB, or migrate for existing)
+  # Runs db:woodesk_prepare (schema load + seed for fresh DB, or migrate for existing)
   # against the Supabase database. Web/worker containers wait for it to finish.
   migrate:
-    image: ${CHATWOOT_IMAGE:-chatwoot/chatwoot:latest}
+    image: ${WOODESK_IMAGE:-woodesk/chat:latest}
     env_file: .env.supabase
     environment:
       - RAILS_ENV=production
@@ -28,7 +28,7 @@ services:
       - POSTGRES_USERNAME
       - POSTGRES_PASSWORD
       - POSTGRES_DATABASE
-    command: ["bundle", "exec", "rails", "db:chatwoot_prepare"]
+    command: ["bundle", "exec", "rails", "db:woodesk_prepare"]
     restart: "no"
 
   # TLS-terminating reverse proxy. Caddy provisions Let's Encrypt certs automatically.
@@ -55,7 +55,7 @@ services:
   # Web server (Puma). Serves HTTP + ActionCable (WebSocket) in-process.
   # Static assets are served by Rails (RAILS_SERVE_STATIC_FILES=true, baked in image).
   rails:
-    image: ${CHATWOOT_IMAGE:-chatwoot/chatwoot:latest}
+    image: ${WOODESK_IMAGE:-woodesk/chat:latest}
     restart: unless-stopped
     depends_on:
       migrate:
@@ -91,7 +91,7 @@ services:
   # Sidekiq — background jobs. Partitioned by queue priority into two workers.
   # critical: webhooks, conversations, auth, mailers (latency-sensitive).
   sidekiq-critical:
-    image: ${CHATWOOT_IMAGE:-chatwoot/chatwoot:latest}
+    image: ${WOODESK_IMAGE:-woodesk/chat:latest}
     restart: unless-stopped
     depends_on:
       migrate:
@@ -117,7 +117,7 @@ services:
 
   # low: housekeeping, storage analysis/purge, bulk reindex, scheduled jobs (tolerates delay).
   sidekiq-low:
-    image: ${CHATWOOT_IMAGE:-chatwoot/chatwoot:latest}
+    image: ${WOODESK_IMAGE:-woodesk/chat:latest}
     restart: unless-stopped
     depends_on:
       migrate:

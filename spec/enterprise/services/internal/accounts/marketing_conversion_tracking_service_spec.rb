@@ -15,7 +15,7 @@ RSpec.describe Internal::Accounts::MarketingConversionTrackingService do
       'customer_id' => '852-320-2898',
       'login_customer_id' => '742-202-9198',
       'service_account_credentials' => {
-        'client_email' => 'marketing-conversions@chatwoot-production.iam.gserviceaccount.com',
+        'client_email' => 'marketing-conversions@woodesk-production.iam.gserviceaccount.com',
         'private_key' => private_key
       },
       'events' => {
@@ -36,12 +36,12 @@ RSpec.describe Internal::Accounts::MarketingConversionTrackingService do
     create(:installation_config, name: described_class::CONFIG_KEY, value: config.to_json)
     account.update!(internal_attributes: { 'marketing_attribution' => marketing_attribution })
 
-    allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(true)
+    allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(true)
     allow(Google::Auth::ServiceAccountCredentials).to receive(:make_creds).and_return(credentials)
   end
 
-  it 'does nothing outside Chatwoot Cloud' do
-    allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(false)
+  it 'does nothing outside Woodesk Cloud' do
+    allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(false)
 
     expect(HTTParty).not_to receive(:post)
 

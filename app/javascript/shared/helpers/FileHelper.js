@@ -1,4 +1,4 @@
-import { getAllowedFileTypesByChannel } from '@chatwoot/utils';
+import { getAllowedFileTypesByChannel } from '@@WOODESK_UTILS_DEP@@';
 import { INBOX_TYPES } from 'dashboard/helper/inbox';
 
 export const DEFAULT_MAXIMUM_FILE_UPLOAD_SIZE = 40;

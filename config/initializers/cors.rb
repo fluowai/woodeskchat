@@ -6,7 +6,7 @@
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   # ---------------------------------------------------------------------------
   # Public, unauthenticated resources. These are intentionally reachable from any
-  # origin because the Chatwoot widget / inbox configuration is embedded on
+  # origin because the Woodesk widget / inbox configuration is embedded on
   # third-party sites (e.g. /api/v1/widget/*, /public/api/v1/inboxes/*).
   # ---------------------------------------------------------------------------
   allow do

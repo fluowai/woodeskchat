@@ -1,5 +1,5 @@
 import { frontendURL } from '../../../../helper/URLHelper';
-import { parseBoolean } from '@chatwoot/utils';
+import { parseBoolean } from '@@WOODESK_UTILS_DEP@@';
 
 import SettingsWrapper from '../SettingsWrapper.vue';
 import Index from './Index.vue';
@@ -32,7 +32,7 @@ export default {
           },
           beforeEnter: (to, from, next) => {
             // Check if MFA is enabled globally
-            if (!parseBoolean(window.chatwootConfig?.isMfaEnabled)) {
+            if (!parseBoolean(window.woodeskConfig?.isMfaEnabled)) {
               // Redirect to profile settings if MFA is disabled
               next({ name: 'profile_settings_index' });
             } else {

@@ -1,12 +1,12 @@
 #!/bin/sh
-# rails.prod.sh — Production entrypoint for the locally-built Chatwoot image.
+# rails.prod.sh — Production entrypoint for the locally-built Woodesk image.
 #
 # Runs DB migration/setup idempotently against the configured (Supabase) database
-# using `db:chatwoot_prepare` (schema load + seed for a fresh DB, migrate for an
+# using `db:woodesk_prepare` (schema load + seed for a fresh DB, migrate for an
 # existing one), then execs the container's main command (provided by the compose
 # `command`/`CMD`).
 #
-# When using the published `chatwoot/chatwoot:latest` image with the separate
+# When using the published `woodesk/chat:latest` image with the separate
 # `migrate` init service (see docker-compose.supabase.yaml), this entrypoint is
 # not required — prefer that pattern. This script is for local image builds.
 
@@ -23,8 +23,8 @@ if [ -n "$DATABASE_URL" ]; then
   eval "$(ruby /app/docker/entrypoints/helpers/pg_database_url.rb 2>/dev/null)"
 fi
 
-echo "==> Running database setup/migrations (db:chatwoot_prepare)..."
-bundle exec rails db:chatwoot_prepare
+echo "==> Running database setup/migrations (db:woodesk_prepare)..."
+bundle exec rails db:woodesk_prepare
 
 # Hand off to the container's main process (e.g. puma).
 exec "$@"

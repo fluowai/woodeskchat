@@ -1,5 +1,5 @@
 <script>
-import { getContrastingTextColor } from '@chatwoot/utils';
+import { getContrastingTextColor } from '@@WOODESK_UTILS_DEP@@';
 
 export default {
   props: {

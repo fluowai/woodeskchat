@@ -13,7 +13,7 @@ import { useVuelidate } from '@vuelidate/core';
 import { requiredIf } from '@vuelidate/validators';
 import { useI18n } from 'vue-i18n';
 
-import { isWhatsAppComplete } from '@chatwoot/utils';
+import { isWhatsAppComplete } from '@@WOODESK_UTILS_DEP@@';
 import Input from 'dashboard/components-next/input/Input.vue';
 import {
   buildTemplateParameters,
@@ -113,7 +113,7 @@ const renderedTemplate = computed(() => {
   );
 });
 
-// Completeness validation is shared with the mobile app via @chatwoot/utils.
+// Completeness validation is shared with the mobile app via @@WOODESK_UTILS_DEP@@.
 const isFormInvalid = computed(
   () => !isWhatsAppComplete(props.template, processedParams.value)
 );

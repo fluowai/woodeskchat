@@ -1,7 +1,7 @@
-# Resolves Stripe price ids from CHATWOOT_CLOUD_PLANS per currency.
+# Resolves Stripe price ids from WOODESK_CLOUD_PLANS per currency.
 # A plan's `price_ids` may be a currency-keyed Hash, or a legacy Array (treated as usd).
 module Enterprise::Billing::PlanConfiguration
-  CLOUD_PLANS_CONFIG = 'CHATWOOT_CLOUD_PLANS'.freeze
+  CLOUD_PLANS_CONFIG = 'WOODESK_CLOUD_PLANS'.freeze
 
   module_function
 

@@ -5,7 +5,7 @@ import { useMemoize } from '@vueuse/core';
 import format from 'date-fns/format';
 import getDay from 'date-fns/getDay';
 
-import { getQuantileIntervals } from '@chatwoot/utils';
+import { getQuantileIntervals } from '@@WOODESK_UTILS_DEP@@';
 
 import { groupHeatmapByDay } from 'helpers/ReportsDataHelper';
 import { useI18n } from 'vue-i18n';

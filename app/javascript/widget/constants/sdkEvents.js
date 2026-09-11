@@ -1,7 +1,7 @@
-export const CHATWOOT_ERROR = 'chatwoot:error';
-export const CHATWOOT_ON_MESSAGE = 'chatwoot:on-message';
-export const CHATWOOT_ON_START_CONVERSATION = 'chatwoot:on-start-conversation';
-export const CHATWOOT_POSTBACK = 'chatwoot:postback';
-export const CHATWOOT_READY = 'chatwoot:ready';
-export const CHATWOOT_OPENED = 'chatwoot:opened';
-export const CHATWOOT_CLOSED = 'chatwoot:closed';
+export const WOODESK_ERROR = 'woodesk:error';
+export const WOODESK_ON_MESSAGE = 'woodesk:on-message';
+export const WOODESK_ON_START_CONVERSATION = 'woodesk:on-start-conversation';
+export const WOODESK_POSTBACK = 'woodesk:postback';
+export const WOODESK_READY = 'woodesk:ready';
+export const WOODESK_OPENED = 'woodesk:opened';
+export const WOODESK_CLOSED = 'woodesk:closed';

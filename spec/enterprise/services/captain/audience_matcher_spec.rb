@@ -52,7 +52,7 @@ RSpec.describe Captain::AudienceMatcher do
       end
 
       it 'does not include missing standard and additional attributes in negative matches' do
-        contact.update!(email: 'person@chatwoot.com', identifier: nil,
+        contact.update!(email: 'person@woodesk.com', identifier: nil,
                         additional_attributes: contact.additional_attributes.except('country_code'))
 
         expect(matches?(leaf('identifier', 'not_equal_to', 'known'))).to be(false)

@@ -129,18 +129,18 @@ export const twilioTemplates = [
     template_type: 'quick_reply',
   },
   {
-    body: 'What type of Chatwoot installation are you using? Select "Chatwoot Cloud" if you are using app.chatwoot.com, otherwise select "Self-hosted Chatwoot".',
+    body: 'What type of Woodesk installation are you using? Select "Woodesk Cloud" if you are using app.woodesk.com, otherwise select "Self-hosted Woodesk".',
     types: {
       'twilio/quick-reply': {
-        body: 'What type of Chatwoot installation are you using? Select "Chatwoot Cloud" if you are using app.chatwoot.com, otherwise select "Self-hosted Chatwoot".',
+        body: 'What type of Woodesk installation are you using? Select "Woodesk Cloud" if you are using app.woodesk.com, otherwise select "Self-hosted Woodesk".',
         actions: [
           {
-            id: 'Chatwoot Cloud_payload',
-            title: 'Chatwoot Cloud',
+            id: 'Woodesk Cloud_payload',
+            title: 'Woodesk Cloud',
           },
           {
-            id: 'Self-hosted Chatwoot_payload',
-            title: 'Self-hosted Chatwoot',
+            id: 'Self-hosted Woodesk_payload',
+            title: 'Self-hosted Woodesk',
           },
         ],
       },

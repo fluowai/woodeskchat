@@ -33,7 +33,7 @@ class Captain::ConversationCompletionService < Captain::BaseTaskService
   private
 
   def self_hosted_model_override
-    return unless ChatwootApp.self_hosted_enterprise?
+    return unless WoodeskApp.self_hosted_enterprise?
 
     InstallationConfig.find_by(name: 'CAPTAIN_OPEN_AI_MODEL')&.value.presence
   end

@@ -58,7 +58,7 @@ export default {
     ...mapGetters({
       accountId: 'getCurrentAccountId',
       isFeatureEnabledonAccount: 'accounts/isFeatureEnabledonAccount',
-      isOnChatwootCloud: 'globalConfig/isOnChatwootCloud',
+      isOnWoodeskCloud: 'globalConfig/isOnWoodeskCloud',
     }),
     isEmbeddedSignupWhatsApp() {
       return this.inbox.provider_config?.source === 'embedded_signup';
@@ -68,7 +68,7 @@ export default {
         this.isEmbeddedSignupWhatsApp &&
         this.isFeatureEnabledonAccount(
           this.accountId,
-          this.isOnChatwootCloud
+          this.isOnWoodeskCloud
             ? FEATURE_FLAGS.WHATSAPP_EMBEDDED_SIGNUP_FLOW
             : FEATURE_FLAGS.WHATSAPP_RECONFIGURE
         )
@@ -310,7 +310,7 @@ export default {
             <a
               target="_blank"
               rel="noopener noreferrer"
-              href="https://www.chatwoot.com/docs/product/channels/live-chat/sdk/identity-validation/"
+              href="https://www.woodesk.com/docs/product/channels/live-chat/sdk/identity-validation/"
               class="text-n-blue-11 hover:underline text-label-small"
             >
               {{
@@ -473,7 +473,7 @@ export default {
       </template>
       <WhatsappBusinessManagementToken
         v-if="
-          isOnChatwootCloud &&
+          isOnWoodeskCloud &&
           inbox.provider === 'whatsapp_cloud' &&
           isEmbeddedSignupWhatsApp
         "

@@ -17,7 +17,7 @@ RSpec.describe 'Enterprise SAML OmniAuth Callbacks', type: :request do
   end
 
   before do
-    allow(ChatwootApp).to receive(:enterprise?).and_return(true)
+    allow(WoodeskApp).to receive(:enterprise?).and_return(true)
     account.enable_features!('saml')
     saml_settings
   end
@@ -56,7 +56,7 @@ RSpec.describe 'Enterprise SAML OmniAuth Callbacks', type: :request do
 
         get "/omniauth/saml/callback?account_id=#{account.id}&RelayState=mobile"
 
-        expect(response).to redirect_to(%r{\Achatwootapp://auth/saml\?email=.+&sso_auth_token=.+\z})
+        expect(response).to redirect_to(%r{\Awoodeskapp://auth/saml\?email=.+&sso_auth_token=.+\z})
       end
     end
 

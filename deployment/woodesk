@@ -1,0 +1,6 @@
+# give woodesk user permission to start/stop/restart woodesk systemd service
+
+%woodesk ALL=NOPASSWD: /bin/systemctl start woodesk.target
+%woodesk ALL=NOPASSWD: /bin/systemctl stop woodesk.target
+%woodesk ALL=NOPASSWD: /bin/systemctl restart woodesk.target
+%woodesk ALL=NOPASSWD: /usr/local/bin/cwctl

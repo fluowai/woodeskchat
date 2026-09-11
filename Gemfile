@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '3.4.4'
+ruby '3.3.4'
 
 ##-- base gems for rails --##
 
@@ -83,7 +83,7 @@ gem 'barnes'
 
 ##--- gems for authentication & authorization ---##
 gem 'devise', '>= 4.9.4'
-# 2.2.3 requires Devise 5; Chatwoot remains on Devise 4 for this upgrade stack.
+# 2.2.3 requires Devise 5; Woodesk remains on Devise 4 for this upgrade stack.
 gem 'devise-secure_password', '2.2.1'
 gem 'devise_token_auth', '>= 1.2.3'
 gem 'rails-i18n', '~> 7.0'
@@ -107,7 +107,7 @@ gem 'facebook-messenger'
 gem 'line-bot-api'
 gem 'twilio-ruby'
 # twitty will handle subscription of twitter account events
-# gem 'twitty', git: 'https://github.com/chatwoot/twitty'
+# gem 'twitty', git: 'https://github.com/woodesk/twitty'
 gem 'twitty', '~> 0.1.5'
 # facebook client
 gem 'koala'

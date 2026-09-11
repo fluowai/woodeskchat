@@ -17,7 +17,7 @@ RSpec.describe 'Enterprise Accounts API', type: :request do
     end
 
     before do
-      allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(true)
+      allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(true)
     end
 
     it 'records marketing attribution for unauthenticated signup requests' do
@@ -74,27 +74,27 @@ RSpec.describe 'Enterprise Accounts API', type: :request do
     let(:admin) { create(:user, account: account, role: :administrator) }
 
     before do
-      Redis::Alfred.set(Redis::Alfred::LATEST_CHATWOOT_VERSION, '4.16.1')
+      Redis::Alfred.set(Redis::Alfred::LATEST_WOODESK_VERSION, '4.16.1')
     end
 
-    it 'hides the latest chatwoot version on cloud' do
-      allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(true)
+    it 'hides the latest woodesk version on cloud' do
+      allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(true)
 
       get "/api/v1/accounts/#{account.id}",
           headers: admin.create_new_auth_token,
           as: :json
 
-      expect(response.parsed_body['latest_chatwoot_version']).to be_nil
+      expect(response.parsed_body['latest_woodesk_version']).to be_nil
     end
 
-    it 'exposes the latest chatwoot version on self-hosted enterprise' do
-      allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(false)
+    it 'exposes the latest woodesk version on self-hosted enterprise' do
+      allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(false)
 
       get "/api/v1/accounts/#{account.id}",
           headers: admin.create_new_auth_token,
           as: :json
 
-      expect(response.parsed_body['latest_chatwoot_version']).to eq('4.16.1')
+      expect(response.parsed_body['latest_woodesk_version']).to eq('4.16.1')
     end
   end
 end

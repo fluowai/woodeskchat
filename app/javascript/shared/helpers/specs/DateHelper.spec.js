@@ -7,7 +7,7 @@ import {
 
 describe('#DateHelper', () => {
   it('should format unix date correctly without dateFormat', () => {
-    expect(formatUnixDate(1576340626)).toEqual('Dec 14, 2019');
+    expect(formatUnixDate(1576340626)).toEqual('14/12/2019');
   });
 
   it('should format unix date correctly without dateFormat', () => {

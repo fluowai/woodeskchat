@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRoute } from 'vue-router';
-import { formatTime } from '@chatwoot/utils';
+import { formatTime } from '@@WOODESK_UTILS_DEP@@';
 import format from 'date-fns/format';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import Icon from 'dashboard/components-next/icon/Icon.vue';

@@ -27,7 +27,7 @@ class Captain::Llm::ContactAttributesService < Llm::BaseAiService
     end
     parse_response(response.content)
   rescue RubyLLM::Error => e
-    ChatwootExceptionTracker.new(e, account: @conversation.account).capture_exception
+    WoodeskExceptionTracker.new(e, account: @conversation.account).capture_exception
     []
   end
 

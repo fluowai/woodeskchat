@@ -1,6 +1,6 @@
 <script setup>
 import { ref, useTemplateRef, onMounted, onUnmounted } from 'vue';
-import { debounce } from '@chatwoot/utils';
+import { debounce } from '@@WOODESK_UTILS_DEP@@';
 import RecentSearches from './RecentSearches.vue';
 
 const emit = defineEmits(['search', 'selectRecentSearch']);

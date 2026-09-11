@@ -1,0 +1,109 @@
+version: "3.8"
+
+# ---------------------------------------------------------------------------
+# docker-compose.woodesk.yaml
+# Stack Woodesk para Portainer com BANCO EXTERNO (PostgreSQL gerenciado).
+#   - PostgreSQL (externo, com pgvector)   -> POSTGRES_HOST/PORT/USERNAME/PASSWORD/DATABASE
+#   - Redis (container local; troque REDIS_URL por um gerenciado se preferir) -> REDIS_URL
+#   - Imagem publicada: woodesk/chat (override via WOODESK_IMAGE)
+#
+# Não sobe container de banco: use Supabase, RDS+pgvector, Neon ou qualquer
+# PostgreSQL 16 com as extensões: pg_stat_statements, pg_trgm, pgcrypto, vector.
+# Copie `.env.woodesk.example` para `.env.woodesk` (no diretório do stack) e
+# preencha. No Portainer: Stacks > Add stack > Web editor no diretório do stack,
+# ou Upload com `.env.woodesk` ao lado.
+# ---------------------------------------------------------------------------
+
+services:
+  # TLS termination + reverse proxy (Let's Encrypt via Caddy).
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      rails:
+        condition: service_healthy
+    env_file: .env.woodesk
+    environment:
+      - CADDY_DOMAIN=${CADDY_DOMAIN}
+      - CADDY_EMAIL=${CADDY_EMAIL}
+      - CADDY_RAILS_HOST=${CADDY_RAILS_HOST:-rails}
+      - CADDY_RAILS_PORT=${CADDY_RAILS_PORT:-3000}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  # Migração/init one-shot. Roda schema/migrate + seed (db:woodesk_prepare).
+  migrate:
+    image: ${WOODESK_IMAGE:-woodesk/chat:latest}
+    env_file: .env.woodesk
+    environment:
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+    command: ["bundle", "exec", "rails", "db:woodesk_prepare"]
+    restart: "no"
+
+  # Web (Puma) — HTTP + ActionCable. Sem porta pública: Caddy é o entrypoint.
+  rails:
+    image: ${WOODESK_IMAGE:-woodesk/chat:latest}
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    env_file: .env.woodesk
+    environment:
+      - RAILS_ENV=production
+      - NODE_ENV=production
+      - INSTALLATION_ENV=docker
+      - WEB_CONCURRENCY=${WEB_CONCURRENCY:-2}
+      - RAILS_MAX_THREADS=${RAILS_MAX_THREADS:-5}
+      - RAILS_MIN_THREADS=${RAILS_MIN_THREADS:-5}
+    volumes:
+      - storage_data:/app/storage
+    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+    healthcheck:
+      test: ["CMD", "ruby", "-e", "require 'net/http'; require 'uri'; r=Net::HTTP.get_response(URI('http://127.0.0.1:3000/health')); exit(r && r.code=='200' ? 0 : 1) rescue exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+
+  # Background jobs (Sidekiq) — todas as filas.
+  sidekiq:
+    image: ${WOODESK_IMAGE:-woodesk/chat:latest}
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    env_file: .env.woodesk
+    environment:
+      - RAILS_ENV=production
+      - INSTALLATION_ENV=docker
+    volumes:
+      - storage_data:/app/storage
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+
+  # Redis local. Para rodar 100% "sem containers de infra", remova este serviço
+  # e aponte REDIS_URL (em .env.woodesk) para um Redis gerenciado (ex.: Upstash).
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+    command: ["sh", "-c", "redis-server --requirepass \"$REDIS_PASSWORD\""]
+    env_file: .env.woodesk
+    volumes:
+      - redis_data:/data
+
+volumes:
+  storage_data:
+  redis_data:
+  caddy_data:
+  caddy_config:

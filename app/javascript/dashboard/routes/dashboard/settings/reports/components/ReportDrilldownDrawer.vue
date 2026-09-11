@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import { useEventListener } from '@vueuse/core';
 import { useI18n } from 'vue-i18n';
-import { formatTime } from '@chatwoot/utils';
+import { formatTime } from '@@WOODESK_UTILS_DEP@@';
 import Button from 'dashboard/components-next/button/Button.vue';
 import Spinner from 'dashboard/components-next/spinner/Spinner.vue';
 import SidePanel from 'dashboard/components-next/side-panel/SidePanel.vue';

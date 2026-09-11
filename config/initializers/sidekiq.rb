@@ -8,7 +8,7 @@ Sidekiq.configure_client do |config|
 end
 
 # Logs whenever a job is pulled off Redis for execution.
-class ChatwootDequeuedLogger
+class WoodeskDequeuedLogger
   def call(_worker, job, queue)
     payload = job['args'].first
     Sidekiq.logger.info("Dequeued #{job['wrapped']} #{payload['job_id']} from #{queue}")
@@ -22,7 +22,7 @@ Sidekiq.configure_server do |config|
   config.server_middleware do |chain|
     chain.add CaptainResponseDequeuedLogger
 
-    chain.add ChatwootDequeuedLogger if ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_SIDEKIQ_DEQUEUE_LOGGER', false))
+    chain.add WoodeskDequeuedLogger if ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_SIDEKIQ_DEQUEUE_LOGGER', false))
   end
 
   # skip the default start stop logging

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Description: Install and manage a Chatwoot installation.
+# Description: Install and manage a Woodesk installation.
 # OS: Ubuntu 20.04 LTS, 22.04 LTS, 24.04 LTS
 # Script Version: 3.5.0
 # Run this script as root
@@ -21,7 +21,7 @@ LONGOPTS=console,debug,help,install,Install:,logs:,restart,ssl,upgrade,Upgrade:,
 OPTIONS=cdhiI:l:rsuU:wvWK
 CWCTL_VERSION="3.5.0"
 pg_pass=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 15 ; echo '')
-CHATWOOT_HUB_URL="https://hub.2.chatwoot.com/events"
+WOODESK_HUB_URL="https://hub.2.woodesk.com/events"
 
 # if user does not specify an option
 if [ "$#" -eq 0 ]; then
@@ -166,7 +166,7 @@ trap exit_handler EXIT
 ##############################################################################
 function exit_handler() {
   if [ "$?" -ne 0 ] && [ "$u" == "n" ]; then
-   echo -en "\nSome error has occured. Check '/var/log/chatwoot-setup.log' for details.\n"
+   echo -en "\nSome error has occured. Check '/var/log/woodesk-setup.log' for details.\n"
    exit 1
   fi
 }
@@ -182,12 +182,12 @@ function exit_handler() {
 #   None
 ##############################################################################
 function get_domain_info() {
-  read -rp 'Enter the domain/subdomain for Chatwoot (e.g., chatwoot.domain.com): ' domain_name
+  read -rp 'Enter the domain/subdomain for Woodesk (e.g., woodesk.domain.com): ' domain_name
   read -rp 'Enter an email address for LetsEncrypt to send reminders when your SSL certificate is up for renewal: ' le_email
   cat << EOF
 
 This script will generate SSL certificates via LetsEncrypt and
-serve Chatwoot at https://$domain_name.
+serve Woodesk at https://$domain_name.
 Proceed further once you have pointed your DNS to the IP of the instance.
 
 EOF
@@ -259,7 +259,7 @@ function install_webserver() {
 }
 
 ##############################################################################
-# Create chatwoot linux user
+# Create woodesk linux user
 # Globals:
 #   None
 # Arguments:
@@ -268,8 +268,8 @@ function install_webserver() {
 #   None
 ##############################################################################
 function create_cw_user() {
-  if ! id -u "chatwoot"; then
-    adduser --disabled-password --gecos "" chatwoot
+  if ! id -u "woodesk"; then
+    adduser --disabled-password --gecos "" woodesk
   fi
 }
 
@@ -288,7 +288,7 @@ function configure_rvm() {
   gpg --keyserver hkp://keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
   gpg2 --keyserver hkp://keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
   curl -sSL https://get.rvm.io | bash -s stable
-  adduser chatwoot rvm
+  adduser woodesk rvm
 }
 
 ##############################################################################
@@ -301,10 +301,10 @@ function configure_rvm() {
 #   None
 ##############################################################################
 function save_pgpass() {
-  mkdir -p /opt/chatwoot/config
-  file="/opt/chatwoot/config/.pg_pass"
+  mkdir -p /opt/woodesk/config
+  file="/opt/woodesk/config/.pg_pass"
   if ! test -f "$file"; then
-    echo $pg_pass > /opt/chatwoot/config/.pg_pass
+    echo $pg_pass > /opt/woodesk/config/.pg_pass
   fi
 }
 
@@ -319,7 +319,7 @@ function save_pgpass() {
 #   None
 ##############################################################################
 function get_pgpass() {
-  file="/opt/chatwoot/config/.pg_pass"
+  file="/opt/woodesk/config/.pg_pass"
   if test -f "$file"; then
     pg_pass=$(cat $file)
   fi
@@ -327,7 +327,7 @@ function get_pgpass() {
 }
 
 ##############################################################################
-# Configure postgres to create chatwoot db user.
+# Configure postgres to create woodesk db user.
 # Enable postgres and redis systemd services.
 # Globals:
 #   None
@@ -341,9 +341,9 @@ function configure_db() {
   get_pgpass
   sudo -i -u postgres psql << EOF
     \set pass `echo $pg_pass`
-    CREATE USER chatwoot CREATEDB;
-    ALTER USER chatwoot PASSWORD :'pass';
-    ALTER ROLE chatwoot SUPERUSER;
+    CREATE USER woodesk CREATEDB;
+    ALTER USER woodesk PASSWORD :'pass';
+    ALTER ROLE woodesk SUPERUSER;
     UPDATE pg_database SET datistemplate = FALSE WHERE datname = 'template1';
     DROP DATABASE template1;
     CREATE DATABASE template1 WITH TEMPLATE = template0 ENCODING = 'UNICODE';
@@ -357,7 +357,7 @@ EOF
 }
 
 ##############################################################################
-# Install Chatwoot
+# Install Woodesk
 # This includes setting up ruby, cloning repo and installing dependencies.
 # Globals:
 #   pg_pass
@@ -366,19 +366,19 @@ EOF
 # Outputs:
 #   None
 ##############################################################################
-function setup_chatwoot() {
+function setup_woodesk() {
   local secret=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 63 ; echo '')
   local RAILS_ENV=production
   get_pgpass
 
-  sudo -i -u chatwoot << EOF
+  sudo -i -u woodesk << EOF
   rvm --version
   rvm autolibs disable
   rvm install "ruby-3.4.4"
   rvm use 3.4.4 --default
 
-  git clone https://github.com/chatwoot/chatwoot.git
-  cd chatwoot
+  git clone https://github.com/woodesk/woodesk.git
+  cd woodesk
   git checkout "$BRANCH"
   bundle
   pnpm i
@@ -387,7 +387,7 @@ function setup_chatwoot() {
   sed -i -e "/SECRET_KEY_BASE/ s/=.*/=$secret/" .env
   sed -i -e '/REDIS_URL/ s/=.*/=redis:\/\/localhost:6379/' .env
   sed -i -e '/POSTGRES_HOST/ s/=.*/=localhost/' .env
-  sed -i -e '/POSTGRES_USERNAME/ s/=.*/=chatwoot/' .env
+  sed -i -e '/POSTGRES_USERNAME/ s/=.*/=woodesk/' .env
   sed -i -e "/POSTGRES_PASSWORD/ s/=.*/=$pg_pass/" .env
   sed -i -e '/RAILS_ENV/ s/=.*/=$RAILS_ENV/' .env
   echo -en "\nINSTALLATION_ENV=linux_script" >> ".env"
@@ -406,14 +406,14 @@ EOF
 #   None
 ##############################################################################
 function run_db_migrations(){
-  sudo -i -u chatwoot << EOF
-  cd chatwoot
-  RAILS_ENV=production POSTGRES_STATEMENT_TIMEOUT=600s bundle exec rails db:chatwoot_prepare
+  sudo -i -u woodesk << EOF
+  cd woodesk
+  RAILS_ENV=production POSTGRES_STATEMENT_TIMEOUT=600s bundle exec rails db:woodesk_prepare
 EOF
 }
 
 ##############################################################################
-# Setup Chatwoot systemd services and cwctl CLI
+# Setup Woodesk systemd services and cwctl CLI
 # Globals:
 #   DEPLOYMENT_TYPE
 # Arguments:
@@ -424,7 +424,7 @@ EOF
 function configure_systemd_services() {
   # Check if this is a conversion from existing deployment
   local existing_full_deployment=false
-  if [ -f "/etc/systemd/system/chatwoot.target" ]; then
+  if [ -f "/etc/systemd/system/woodesk.target" ]; then
     existing_full_deployment=true
   fi
 
@@ -434,25 +434,25 @@ function configure_systemd_services() {
     # Stop and disable existing services if converting
     if [ "$existing_full_deployment" = true ]; then
       echo "Converting from full deployment to web-only"
-      systemctl stop chatwoot.target || true
-      systemctl disable chatwoot.target || true
-      systemctl stop chatwoot-worker.1.service || true
-      systemctl disable chatwoot-worker.1.service || true
+      systemctl stop woodesk.target || true
+      systemctl disable woodesk.target || true
+      systemctl stop woodesk-worker.1.service || true
+      systemctl disable woodesk-worker.1.service || true
     fi
 
     # Stop and disable worker target if converting from worker-only
-    if [ -f "/etc/systemd/system/chatwoot-worker.target" ]; then
+    if [ -f "/etc/systemd/system/woodesk-worker.target" ]; then
       echo "Converting from worker-only to web-only"
-      systemctl stop chatwoot-worker.target || true
-      systemctl disable chatwoot-worker.target || true
+      systemctl stop woodesk-worker.target || true
+      systemctl disable woodesk-worker.target || true
     fi
 
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-web.1.service /etc/systemd/system/chatwoot-web.1.service
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-web.target /etc/systemd/system/chatwoot-web.target
+    cp /home/woodesk/woodesk/deployment/woodesk-web.1.service /etc/systemd/system/woodesk-web.1.service
+    cp /home/woodesk/woodesk/deployment/woodesk-web.target /etc/systemd/system/woodesk-web.target
 
     systemctl daemon-reload
-    systemctl enable chatwoot-web.target
-    systemctl start chatwoot-web.target
+    systemctl enable woodesk-web.target
+    systemctl start woodesk-web.target
 
   elif [ "$DEPLOYMENT_TYPE" == "worker" ]; then
     echo "Setting up worker-only deployment"
@@ -460,52 +460,52 @@ function configure_systemd_services() {
     # Stop and disable existing services if converting
     if [ "$existing_full_deployment" = true ]; then
       echo "Converting from full deployment to worker-only"
-      systemctl stop chatwoot.target || true
-      systemctl disable chatwoot.target || true
-      systemctl stop chatwoot-web.1.service || true
-      systemctl disable chatwoot-web.1.service || true
+      systemctl stop woodesk.target || true
+      systemctl disable woodesk.target || true
+      systemctl stop woodesk-web.1.service || true
+      systemctl disable woodesk-web.1.service || true
     fi
 
     # Stop and disable web target if converting from web-only
-    if [ -f "/etc/systemd/system/chatwoot-web.target" ]; then
+    if [ -f "/etc/systemd/system/woodesk-web.target" ]; then
       echo "Converting from web-only to worker-only"
-      systemctl stop chatwoot-web.target || true
-      systemctl disable chatwoot-web.target || true
+      systemctl stop woodesk-web.target || true
+      systemctl disable woodesk-web.target || true
     fi
 
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-worker.1.service /etc/systemd/system/chatwoot-worker.1.service
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-worker.target /etc/systemd/system/chatwoot-worker.target
+    cp /home/woodesk/woodesk/deployment/woodesk-worker.1.service /etc/systemd/system/woodesk-worker.1.service
+    cp /home/woodesk/woodesk/deployment/woodesk-worker.target /etc/systemd/system/woodesk-worker.target
 
     systemctl daemon-reload
-    systemctl enable chatwoot-worker.target
-    systemctl start chatwoot-worker.target
+    systemctl enable woodesk-worker.target
+    systemctl start woodesk-worker.target
 
   else
     echo "Setting up full deployment (web + worker)"
 
     # Stop existing specialized deployments if converting back to full
-    if [ -f "/etc/systemd/system/chatwoot-web.target" ]; then
+    if [ -f "/etc/systemd/system/woodesk-web.target" ]; then
       echo "Converting from web-only to full deployment"
-      systemctl stop chatwoot-web.target || true
-      systemctl disable chatwoot-web.target || true
+      systemctl stop woodesk-web.target || true
+      systemctl disable woodesk-web.target || true
     fi
-    if [ -f "/etc/systemd/system/chatwoot-worker.target" ]; then
+    if [ -f "/etc/systemd/system/woodesk-worker.target" ]; then
       echo "Converting from worker-only to full deployment"
-      systemctl stop chatwoot-worker.target || true
-      systemctl disable chatwoot-worker.target || true
+      systemctl stop woodesk-worker.target || true
+      systemctl disable woodesk-worker.target || true
     fi
 
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-web.1.service /etc/systemd/system/chatwoot-web.1.service
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-worker.1.service /etc/systemd/system/chatwoot-worker.1.service
-    cp /home/chatwoot/chatwoot/deployment/chatwoot.target /etc/systemd/system/chatwoot.target
+    cp /home/woodesk/woodesk/deployment/woodesk-web.1.service /etc/systemd/system/woodesk-web.1.service
+    cp /home/woodesk/woodesk/deployment/woodesk-worker.1.service /etc/systemd/system/woodesk-worker.1.service
+    cp /home/woodesk/woodesk/deployment/woodesk.target /etc/systemd/system/woodesk.target
 
     systemctl daemon-reload
-    systemctl enable chatwoot.target
-    systemctl start chatwoot.target
+    systemctl enable woodesk.target
+    systemctl start woodesk.target
   fi
 
-  cp /home/chatwoot/chatwoot/deployment/chatwoot /etc/sudoers.d/chatwoot
-  cp /home/chatwoot/chatwoot/deployment/setup_20.04.sh /usr/local/bin/cwctl
+  cp /home/woodesk/woodesk/deployment/woodesk /etc/sudoers.d/woodesk
+  cp /home/woodesk/woodesk/deployment/setup_20.04.sh /usr/local/bin/cwctl
   chmod +x /usr/local/bin/cwctl
 }
 
@@ -528,24 +528,24 @@ function setup_ssl() {
     echo "debug: letsencrypt email: $le_email"
   fi
   curl https://ssl-config.mozilla.org/ffdhe4096.txt >> /etc/ssl/dhparam
-  wget https://raw.githubusercontent.com/chatwoot/chatwoot/develop/deployment/nginx_chatwoot.conf
-  cp nginx_chatwoot.conf /etc/nginx/sites-available/nginx_chatwoot.conf
+  wget https://raw.githubusercontent.com/woodesk/woodesk/develop/deployment/nginx_woodesk.conf
+  cp nginx_woodesk.conf /etc/nginx/sites-available/nginx_woodesk.conf
   certbot certonly --non-interactive --agree-tos --nginx -m "$le_email" -d "$domain_name"
-  sed -i "s/chatwoot.domain.com/$domain_name/g" /etc/nginx/sites-available/nginx_chatwoot.conf
-  ln -s /etc/nginx/sites-available/nginx_chatwoot.conf /etc/nginx/sites-enabled/nginx_chatwoot.conf
+  sed -i "s/woodesk.domain.com/$domain_name/g" /etc/nginx/sites-available/nginx_woodesk.conf
+  ln -s /etc/nginx/sites-available/nginx_woodesk.conf /etc/nginx/sites-enabled/nginx_woodesk.conf
   systemctl restart nginx
-  sudo -i -u chatwoot << EOF
-  cd chatwoot
+  sudo -i -u woodesk << EOF
+  cd woodesk
   sed -i "s/http:\/\/0.0.0.0:3000/https:\/\/$domain_name/g" .env
 EOF
 
-  # Restart the appropriate chatwoot target
-  if [ -f "/etc/systemd/system/chatwoot-web.target" ]; then
-    systemctl restart chatwoot-web.target
-  elif [ -f "/etc/systemd/system/chatwoot-worker.target" ]; then
-    systemctl restart chatwoot-worker.target
+  # Restart the appropriate woodesk target
+  if [ -f "/etc/systemd/system/woodesk-web.target" ]; then
+    systemctl restart woodesk-web.target
+  elif [ -f "/etc/systemd/system/woodesk-worker.target" ]; then
+    systemctl restart woodesk-worker.target
   else
-    systemctl restart chatwoot.target
+    systemctl restart woodesk.target
   fi
 }
 
@@ -559,25 +559,25 @@ EOF
 #   None
 ##############################################################################
 function setup_logging() {
-  touch /var/log/chatwoot-setup.log
-  LOG_FILE="/var/log/chatwoot-setup.log"
+  touch /var/log/woodesk-setup.log
+  LOG_FILE="/var/log/woodesk-setup.log"
 }
 
 function ssl_success_message() {
     cat << EOF
 
 ***************************************************************************
-Woot! Woot!! Chatwoot server installation is complete.
+Woot! Woot!! Woodesk server installation is complete.
 The server will be accessible at https://$domain_name
 
-Join the community at https://chatwoot.com/community?utm_source=cwctl
+Join the community at https://woodesk.com/community?utm_source=cwctl
 ***************************************************************************
 
 EOF
 }
 
 function cwctl_message() {
-  echo $'\U0001F680 Try out the all new Chatwoot CLI tool to manage your installation.'
+  echo $'\U0001F680 Try out the all new Woodesk CLI tool to manage your installation.'
   echo $'\U0001F680 Type "cwctl --help" to learn more.'
 }
 
@@ -592,7 +592,7 @@ function cwctl_message() {
 #   None
 ##############################################################################
 function get_cw_version() {
-  CW_VERSION=$(curl -s https://app.chatwoot.com/api | python3 -c 'import sys,json;data=json.loads(sys.stdin.read()); print(data["version"])')
+  CW_VERSION=$(curl -s https://app.woodesk.com/api | python3 -c 'import sys,json;data=json.loads(sys.stdin.read()); print(data["version"])')
 }
 
 ##############################################################################
@@ -610,16 +610,16 @@ function install() {
   cat << EOF
 
 ***************************************************************************
-              Chatwoot Installation (v$CW_VERSION)
+              Woodesk Installation (v$CW_VERSION)
 ***************************************************************************
 
 For more verbose logs, open up a second terminal and follow along using,
-'tail -f /var/log/chatwoot-setup.log'.
+'tail -f /var/log/woodesk-setup.log'.
 
 EOF
 
   sleep 3
-  read -rp 'Would you like to configure a domain and SSL for Chatwoot?(yes or no): ' configure_webserver
+  read -rp 'Would you like to configure a domain and SSL for Woodesk?(yes or no): ' configure_webserver
 
   if [ "$configure_webserver" == "yes" ]; then
     get_domain_info
@@ -655,8 +655,8 @@ EOF
     echo "➥ 5/9 Skipping database setup."
   fi
 
-  echo "➥ 6/9 Installing Chatwoot. This takes a long while."
-  setup_chatwoot &>> "${LOG_FILE}"
+  echo "➥ 6/9 Installing Woodesk. This takes a long while."
+  setup_woodesk &>> "${LOG_FILE}"
 
   if [ "$install_pg_redis" != "no" ]; then
     echo "➥ 7/9 Running database migrations."
@@ -676,13 +676,13 @@ EOF
 ➥ 9/9 Skipping SSL/TLS setup.
 
 ***************************************************************************
-Woot! Woot!! Chatwoot server installation is complete.
+Woot! Woot!! Woodesk server installation is complete.
 The server will be accessible at http://$public_ip:3000
 
 To configure a domain and SSL certificate, follow the guide at
-https://www.chatwoot.com/docs/deployment/deploy-chatwoot-in-linux-vm?utm_source=cwctl
+https://www.woodesk.com/docs/deployment/deploy-woodesk-in-linux-vm?utm_source=cwctl
 
-Join the community at https://chatwoot.com/community?utm_source=cwctl
+Join the community at https://woodesk.com/community?utm_source=cwctl
 ***************************************************************************
 
 EOF
@@ -703,7 +703,7 @@ The database migrations had not run as Postgres and Redis were not installed
 as part of the installation process. After modifying the environment
 variables (in the .env file) with your external database credentials, run
 the database migrations using the below command.
-'RAILS_ENV=production POSTGRES_STATEMENT_TIMEOUT=600s bundle exec rails db:chatwoot_prepare'.
+'RAILS_ENV=production POSTGRES_STATEMENT_TIMEOUT=600s bundle exec rails db:woodesk_prepare'.
 ***************************************************************************
 
 EOF
@@ -724,7 +724,7 @@ exit 0
 #   None
 ##############################################################################
 function get_console() {
-  sudo -i -u chatwoot bash -c " cd chatwoot && RAILS_ENV=production bundle exec rails c"
+  sudo -i -u woodesk bash -c " cd woodesk && RAILS_ENV=production bundle exec rails c"
 }
 
 ##############################################################################
@@ -740,7 +740,7 @@ function help() {
 
   cat <<EOF
 Usage: cwctl [OPTION]...
-Install and manage your Chatwoot installation.
+Install and manage your Woodesk installation.
 
 Example: cwctl -i master
 Example: cwctl -i --web-only     (for web server ASG)
@@ -755,10 +755,10 @@ Example: cwctl --logs worker
 Example: cwctl -c
 
 Installation/Upgrade:
-  -i, --install             Install the latest stable version of Chatwoot
-  -I BRANCH                 Install Chatwoot from a git branch
-  -u, --upgrade             Upgrade Chatwoot to the latest stable version
-  -U BRANCH                 Upgrade Chatwoot from a git branch (EXPERIMENTAL)
+  -i, --install             Install the latest stable version of Woodesk
+  -I BRANCH                 Install Woodesk from a git branch
+  -u, --upgrade             Upgrade Woodesk to the latest stable version
+  -U BRANCH                 Upgrade Woodesk from a git branch (EXPERIMENTAL)
   -s, --ssl                 Fetch and install SSL certificates using LetsEncrypt
   -w, --webserver           Install and configure Nginx webserver with SSL
   -W, --web-only            Install only the web server (for ASG deployment)
@@ -767,8 +767,8 @@ Installation/Upgrade:
 
 Management:
   -c, --console             Open ruby console
-  -l, --logs                View logs from Chatwoot. Supported values include web/worker.
-  -r, --restart             Restart Chatwoot server
+  -l, --logs                View logs from Woodesk. Supported values include web/worker.
+  -r, --restart             Restart Woodesk server
 
 Miscellaneous:
   -d, --debug               Show debug messages
@@ -778,14 +778,14 @@ Miscellaneous:
 Exit status:
 Returns 0 if successful; non-zero otherwise.
 
-Report bugs at https://github.com/chatwoot/chatwoot/issues
-Get help, https://chatwoot.com/community?utm_source=cwctl
+Report bugs at https://github.com/woodesk/woodesk/issues
+Get help, https://woodesk.com/community?utm_source=cwctl
 
 EOF
 }
 
 ##############################################################################
-# Get Chatwoot web/worker logs (-l/--logs)
+# Get Woodesk web/worker logs (-l/--logs)
 # Globals:
 #   None
 # Arguments:
@@ -795,10 +795,10 @@ EOF
 ##############################################################################
 function get_logs() {
   if [ "$SERVICE" == "worker" ]; then
-    journalctl -u chatwoot-worker.1.service -f
+    journalctl -u woodesk-worker.1.service -f
   fi
   if [ "$SERVICE" == "web" ]; then
-    journalctl -u chatwoot-web.1.service -f
+    journalctl -u woodesk-web.1.service -f
   fi
 }
 
@@ -835,8 +835,8 @@ function ssl() {
 #   None
 ##############################################################################
 function upgrade_prereq() {
-  sudo -i -u chatwoot << "EOF"
-  cd chatwoot
+  sudo -i -u woodesk << "EOF"
+  cd woodesk
   git update-index --refresh
   git diff-index --quiet HEAD --
   if [ "$?" -eq 1 ]; then
@@ -880,7 +880,7 @@ function upgrade_redis() {
     return
   fi
 
-  echo "Upgrading Redis to v7+ for Rails 7 support(Chatwoot v2.17+)"
+  echo "Upgrading Redis to v7+ for Rails 7 support(Woodesk v2.17+)"
 
   curl -fsSL https://packages.redis.io/gpg | sudo gpg --dearmor --yes -o /usr/share/keyrings/redis-archive-keyring.gpg
   echo "deb [signed-by=/usr/share/keyrings/redis-archive-keyring.gpg] https://packages.redis.io/deb $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/redis.list
@@ -925,7 +925,7 @@ function upgrade_node() {
 }
 
 ##############################################################################
-# Install pnpm - this replaces yarn starting from Chatwoot 4.0
+# Install pnpm - this replaces yarn starting from Woodesk 4.0
 # Globals:
 #   None
 # Arguments:
@@ -942,8 +942,8 @@ function get_pnpm() {
   echo "pnpm is not installed. Installing pnpm..."
   npm install -g pnpm
   echo "Cleaning up existing node_modules directory..."
-  sudo -i -u chatwoot << "EOF"
-  cd chatwoot
+  sudo -i -u woodesk << "EOF"
+  cd woodesk
   rm -rf node_modules
 EOF
 }
@@ -960,7 +960,7 @@ EOF
 function upgrade() {
   cwctl_upgrade_check
   get_cw_version
-  echo "Upgrading Chatwoot to v$CW_VERSION (branch: $BRANCH)"
+  echo "Upgrading Woodesk to v$CW_VERSION (branch: $BRANCH)"
 
   # Warning for non-master branch upgrades
   if [ "$BRANCH" != "master" ]; then
@@ -989,7 +989,7 @@ EOF
 
    # Check if CW_VERSION is 4.0 or above
   if [[ "$(printf '%s\n' "$CW_VERSION" "4.0" | sort -V | head -n 1)" == "4.0" ]]; then
-    echo "Chatwoot v4.0 and above requires pgvector support in PostgreSQL."
+    echo "Woodesk v4.0 and above requires pgvector support in PostgreSQL."
     read -p "Does your postgres support pgvector and want to proceed with the upgrade? [y/N]: " user_input
     user_input=${user_input:-Y}
     if [[ "$user_input" =~ ^([yY][eE][sS]|[yY])$ ]]; then
@@ -1006,10 +1006,10 @@ EOF
   upgrade_node
   get_pnpm
 
-  sudo -i -u chatwoot << EOF
+  sudo -i -u woodesk << EOF
 
-  # Navigate to the Chatwoot directory
-  cd chatwoot
+  # Navigate to the Woodesk directory
+  cd woodesk
 
   # Pull the latest version of the specified branch
   git fetch
@@ -1034,39 +1034,39 @@ EOF
 EOF
 
   # Copy the updated services and targets based on existing deployment
-  if [ -f "/etc/systemd/system/chatwoot-web.target" ]; then
+  if [ -f "/etc/systemd/system/woodesk-web.target" ]; then
     echo "Updating web-only deployment"
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-web.1.service /etc/systemd/system/chatwoot-web.1.service
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-web.target /etc/systemd/system/chatwoot-web.target
-  elif [ -f "/etc/systemd/system/chatwoot-worker.target" ]; then
+    cp /home/woodesk/woodesk/deployment/woodesk-web.1.service /etc/systemd/system/woodesk-web.1.service
+    cp /home/woodesk/woodesk/deployment/woodesk-web.target /etc/systemd/system/woodesk-web.target
+  elif [ -f "/etc/systemd/system/woodesk-worker.target" ]; then
     echo "Updating worker-only deployment"
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-worker.1.service /etc/systemd/system/chatwoot-worker.1.service
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-worker.target /etc/systemd/system/chatwoot-worker.target
+    cp /home/woodesk/woodesk/deployment/woodesk-worker.1.service /etc/systemd/system/woodesk-worker.1.service
+    cp /home/woodesk/woodesk/deployment/woodesk-worker.target /etc/systemd/system/woodesk-worker.target
   else
     echo "Updating full deployment"
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-web.1.service /etc/systemd/system/chatwoot-web.1.service
-    cp /home/chatwoot/chatwoot/deployment/chatwoot-worker.1.service /etc/systemd/system/chatwoot-worker.1.service
-    cp /home/chatwoot/chatwoot/deployment/chatwoot.target /etc/systemd/system/chatwoot.target
+    cp /home/woodesk/woodesk/deployment/woodesk-web.1.service /etc/systemd/system/woodesk-web.1.service
+    cp /home/woodesk/woodesk/deployment/woodesk-worker.1.service /etc/systemd/system/woodesk-worker.1.service
+    cp /home/woodesk/woodesk/deployment/woodesk.target /etc/systemd/system/woodesk.target
   fi
 
-  cp /home/chatwoot/chatwoot/deployment/chatwoot /etc/sudoers.d/chatwoot
+  cp /home/woodesk/woodesk/deployment/woodesk /etc/sudoers.d/woodesk
   # TODO:(@vn) handle cwctl updates
 
   systemctl daemon-reload
 
-  # Restart the appropriate chatwoot target
-  if [ -f "/etc/systemd/system/chatwoot-web.target" ]; then
-    systemctl restart chatwoot-web.target
-  elif [ -f "/etc/systemd/system/chatwoot-worker.target" ]; then
-    systemctl restart chatwoot-worker.target
+  # Restart the appropriate woodesk target
+  if [ -f "/etc/systemd/system/woodesk-web.target" ]; then
+    systemctl restart woodesk-web.target
+  elif [ -f "/etc/systemd/system/woodesk-worker.target" ]; then
+    systemctl restart woodesk-worker.target
   else
-    systemctl restart chatwoot.target
+    systemctl restart woodesk.target
   fi
 
 }
 
 ##############################################################################
-# Restart Chatwoot server (-r/--restart)
+# Restart Woodesk server (-r/--restart)
 # Globals:
 #   None
 # Arguments:
@@ -1075,20 +1075,20 @@ EOF
 #   None
 ##############################################################################
 function restart() {
-  if [ -f "/etc/systemd/system/chatwoot-web.target" ]; then
-    systemctl restart chatwoot-web.target
-    systemctl status chatwoot-web.target
-  elif [ -f "/etc/systemd/system/chatwoot-worker.target" ]; then
-    systemctl restart chatwoot-worker.target
-    systemctl status chatwoot-worker.target
+  if [ -f "/etc/systemd/system/woodesk-web.target" ]; then
+    systemctl restart woodesk-web.target
+    systemctl status woodesk-web.target
+  elif [ -f "/etc/systemd/system/woodesk-worker.target" ]; then
+    systemctl restart woodesk-worker.target
+    systemctl status woodesk-worker.target
   else
-    systemctl restart chatwoot.target
-    systemctl status chatwoot.target
+    systemctl restart woodesk.target
+    systemctl status woodesk.target
   fi
 }
 
 ##############################################################################
-# Convert existing Chatwoot deployment to different type (--convert)
+# Convert existing Woodesk deployment to different type (--convert)
 # Globals:
 #   DEPLOYMENT_TYPE
 # Arguments:
@@ -1097,11 +1097,11 @@ function restart() {
 #   None
 ##############################################################################
 function convert_deployment() {
-  echo "Converting Chatwoot deployment to: $DEPLOYMENT_TYPE"
+  echo "Converting Woodesk deployment to: $DEPLOYMENT_TYPE"
 
-  # Check if Chatwoot is installed
-  if [ ! -d "/home/chatwoot/chatwoot" ]; then
-    echo "Chatwoot installation not found. Use --install first."
+  # Check if Woodesk is installed
+  if [ ! -d "/home/woodesk/woodesk" ]; then
+    echo "Woodesk installation not found. Use --install first."
     exit 1
   fi
 
@@ -1133,7 +1133,7 @@ function webserver() {
 ##############################################################################
 # Report cwctl events to hub
 # Globals:
-#   CHATWOOT_HUB_URL
+#   WOODESK_HUB_URL
 # Arguments:
 # event_name: Name of the event to report
 # event_data: Data to report
@@ -1145,7 +1145,7 @@ function report_event() {
   local event_name="$1"
   local event_data="$2"
 
-  CHATWOOT_HUB_URL="https://hub.2.chatwoot.com/events"
+  WOODESK_HUB_URL="https://hub.2.woodesk.com/events"
 
   # get installation identifier
   local installation_identifier=$(get_installation_identifier)
@@ -1154,7 +1154,7 @@ function report_event() {
   local data="{\"installation_identifier\":\"$installation_identifier\",\"event_name\":\"$event_name\",\"event_data\":{\"action\":\"$event_data\"}}"
 
   # Make the curl request to report the event
-  curl -X POST -H "Content-Type: application/json" -d "$data" "$CHATWOOT_HUB_URL" -s -o /dev/null
+  curl -X POST -H "Content-Type: application/json" -d "$data" "$WOODESK_HUB_URL" -s -o /dev/null
 }
 
 
@@ -1171,8 +1171,8 @@ function get_installation_identifier() {
 
   local installation_identifier
 
-  installation_identifier=$(sudo -i -u chatwoot << "EOF"
-  cd chatwoot
+  installation_identifier=$(sudo -i -u woodesk << "EOF"
+  cd woodesk
   RAILS_ENV=production bundle exec rake instance_id:get_installation_identifier
 EOF
 )
@@ -1205,7 +1205,7 @@ function version() {
 function cwctl_upgrade_check() {
     echo "Checking for cwctl updates..."
 
-    local remote_version_url="https://raw.githubusercontent.com/chatwoot/chatwoot/master/VERSION_CWCTL"
+    local remote_version_url="https://raw.githubusercontent.com/woodesk/woodesk/master/VERSION_CWCTL"
     local remote_version=$(curl -s "$remote_version_url")
 
     #Check if pip is not installed, and install it if not
@@ -1266,7 +1266,7 @@ function install_packaging() {
 #   None
 ##############################################################################
 function upgrade_cwctl() {
-    wget https://get.chatwoot.app/linux/install.sh -O /usr/local/bin/cwctl > /dev/null 2>&1 && chmod +x /usr/local/bin/cwctl
+    wget https://get.woodesk.app/linux/install.sh -O /usr/local/bin/cwctl > /dev/null 2>&1 && chmod +x /usr/local/bin/cwctl
 }
 
 ##############################################################################

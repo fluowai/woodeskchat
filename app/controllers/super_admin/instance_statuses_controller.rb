@@ -1,18 +1,18 @@
 class SuperAdmin::InstanceStatusesController < SuperAdmin::ApplicationController
   def show
     @metrics = {}
-    chatwoot_version
+    woodesk_version
     sha
     postgres_status
     redis_metrics
-    chatwoot_edition
+    woodesk_edition
     instance_meta
   end
 
-  def chatwoot_edition
-    @metrics['Chatwoot edition'] = if ChatwootApp.enterprise?
+  def woodesk_edition
+    @metrics['Woodesk edition'] = if WoodeskApp.enterprise?
                                      'Enterprise'
-                                   elsif ChatwootApp.custom?
+                                   elsif WoodeskApp.custom?
                                      'Custom'
                                    else
                                      'Community'
@@ -25,8 +25,8 @@ class SuperAdmin::InstanceStatusesController < SuperAdmin::ApplicationController
     @metrics['Database Migrations'] = migrations_context.needs_migration? ? 'pending' : 'completed'
   end
 
-  def chatwoot_version
-    @metrics['Chatwoot version'] = Chatwoot.config[:version]
+  def woodesk_version
+    @metrics['Woodesk version'] = Woodesk.config[:version]
   end
 
   def sha

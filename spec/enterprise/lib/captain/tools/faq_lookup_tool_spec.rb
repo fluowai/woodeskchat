@@ -131,7 +131,7 @@ RSpec.describe Captain::Tools::FaqLookupTool, type: :model do
         tool.perform(tool_context, query: 'password reset')
       end
 
-      it 'records retrieved faq ids and document ids into Chatwoot metadata' do
+      it 'records retrieved faq ids and document ids into Woodesk metadata' do
         tool.perform(tool_context, query: 'password reset')
 
         user = create(:user, account: account)

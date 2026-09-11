@@ -1,0 +1,94 @@
+# ---------------------------------------------------------------------------
+# docker-compose.smoke.yaml — validação LOCAL LEVE (uso pontual, PC/CI).
+#   Pull de recursos: rails (1 réplica, threads baixas) + migrate + redis + postgres.
+#   Sem sidekiq, sem caddy, sem banco externo. Só smoke funcional rápido:
+#   http://localhost:3000/health, login, widget, conversa, relatórios.
+#
+#   Uso:
+#     docker compose -f docker-compose.smoke.yaml up -d --build
+#     docker compose -f docker-compose.smoke.yaml logs -f rails
+#     docker compose -f docker-compose.smoke.yaml down -v
+#
+#   Pós-smoke, remova este arquivo (é descartável; o stack real é o
+#   docker-compose.woodesk.yaml + banco externo).
+# ---------------------------------------------------------------------------
+
+services:
+  # PostgreSQL local com pgvector (mesma imagem do compose de dev). Sem porta
+  # exposta no host — só o Rails alcança via rede interna `postgres:5432`.
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: woodesk_smoke
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: woodesk
+    volumes:
+      - smoke_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d woodesk_smoke"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  redis:
+    image: redis:alpine
+    restart: unless-stopped
+
+  migrate:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    image: woodesk/chat:latest
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment: &app_env
+      RAILS_ENV: production
+      NODE_ENV: production
+      INSTALLATION_ENV: docker
+      FRONTEND_URL: http://localhost:3000
+      SECRET_KEY_BASE: smoke0000000000000000000000000000000000000000000000000000000000000
+      ACTIVE_RECORD_ENCRYPTION_PRIMARY_KEY: smoke0000000000000000000000000000000000000000000000000000000000000
+      ACTIVE_RECORD_ENCRYPTION_DETERMINISTIC_KEY: smoke000000000000000000000000000000000000000000000000000000000000
+      ACTIVE_RECORD_ENCRYPTION_KEY_DERIVATION_SALT: smoke00000000000000000000000000000000000000000000000000000000000
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USERNAME: postgres
+      POSTGRES_PASSWORD: woodesk
+      POSTGRES_DATABASE: woodesk_smoke
+      POSTGRES_SSL: "false"
+      REDIS_URL: redis://redis:6379
+      RAILS_SERVE_STATIC_FILES: "true"
+      FORCE_SSL: "false"
+      ACTIVE_STORAGE_SERVICE: local
+      RAILS_LOG_TO_STDOUT: "true"
+      WEB_CONCURRENCY: "1"
+      RAILS_MAX_THREADS: "3"
+      RAILS_MIN_THREADS: "3"
+    command: ["bundle", "exec", "rails", "db:woodesk_prepare"]
+    restart: "no"
+
+  rails:
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    image: woodesk/chat:latest
+    restart: unless-stopped
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment: *app_env
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "ruby", "-e", "require 'net/http'; exit(Net::HTTP.get_response(URI('http://127.0.0.1:3000/health')).code == '200' ? 0 : 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    command: ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+
+volumes:
+  smoke_pgdata:

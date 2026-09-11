@@ -54,14 +54,14 @@ export const sendRegistrationToServer = subscription => {
 };
 
 export const registerSubscription = (onSuccess = () => {}) => {
-  if (!window.chatwootConfig.vapidPublicKey) {
+  if (!window.woodeskConfig.vapidPublicKey) {
     return;
   }
   navigator.serviceWorker.ready
     .then(serviceWorkerRegistration =>
       serviceWorkerRegistration.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: window.chatwootConfig.vapidPublicKey,
+        applicationServerKey: window.woodeskConfig.vapidPublicKey,
       })
     )
     .then(sendRegistrationToServer)

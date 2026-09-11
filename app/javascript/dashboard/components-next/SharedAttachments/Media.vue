@@ -7,7 +7,7 @@ import {
   formatDuration,
   shortTimestamp,
 } from 'shared/helpers/timeHelper';
-import { downloadFile } from '@chatwoot/utils';
+import { downloadFile } from '@@WOODESK_UTILS_DEP@@';
 import {
   ATTACHMENT_TYPES,
   MEDIA_TYPES,

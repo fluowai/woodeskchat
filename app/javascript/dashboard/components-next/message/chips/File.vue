@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { getFileInfo } from '@chatwoot/utils';
+import { getFileInfo } from '@@WOODESK_UTILS_DEP@@';
 
 import FileIcon from 'next/icon/FileIcon.vue';
 import Icon from 'next/icon/Icon.vue';

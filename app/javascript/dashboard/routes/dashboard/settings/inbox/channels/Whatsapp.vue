@@ -19,7 +19,7 @@ const router = useRouter();
 const { t } = useI18n();
 const {
   isCloudFeatureEnabled,
-  isOnChatwootCloud,
+  isOnWoodeskCloud,
   isMetaInboxCreationDisabled,
 } = useAccount();
 
@@ -34,8 +34,8 @@ const PROVIDER_TYPES = {
 
 const hasWhatsappAppId = computed(() => {
   return (
-    window.chatwootConfig?.whatsappAppId &&
-    window.chatwootConfig.whatsappAppId !== 'none'
+    window.woodeskConfig?.whatsappAppId &&
+    window.woodeskConfig.whatsappAppId !== 'none'
   );
 });
 
@@ -50,7 +50,7 @@ const isWhatsappEmbeddedSignupDisabled = computed(
 
 const isWhatsappEmbeddedSignupFeatureEnabled = computed(
   () =>
-    !isOnChatwootCloud.value ||
+    !isOnWoodeskCloud.value ||
     isCloudFeatureEnabled(FEATURE_FLAGS.WHATSAPP_EMBEDDED_SIGNUP_FLOW)
 );
 
@@ -65,7 +65,7 @@ const shouldShowWhatsappEmbeddedSignup = computed(() => {
 const shouldShowEmbeddedSignupAccessRequest = computed(() => {
   return (
     selectedProvider.value === PROVIDER_TYPES.WHATSAPP &&
-    isOnChatwootCloud.value &&
+    isOnWoodeskCloud.value &&
     hasWhatsappAppId.value &&
     !isWhatsappEmbeddedSignupFeatureEnabled.value &&
     !isWhatsappEmbeddedSignupDisabled.value
@@ -122,7 +122,7 @@ const handleManualLinkClick = () => {
 };
 
 const requestEmbeddedSignupAccess = () => {
-  window.$chatwoot?.toggle();
+  window.$woodesk?.toggle();
 };
 </script>
 

@@ -9,7 +9,7 @@ import {
   getTwilioMediaVariableKey,
   getTwilioMediaUrl,
   applyTwilioMediaFilename,
-} from '@chatwoot/utils';
+} from '@@WOODESK_UTILS_DEP@@';
 
 import Input from 'dashboard/components-next/input/Input.vue';
 
@@ -46,7 +46,7 @@ const templateBody = computed(() => {
 });
 
 // Media-template detection and variable extraction are shared with the mobile
-// app via @chatwoot/utils.
+// app via @@WOODESK_UTILS_DEP@@.
 const hasMediaTemplate = computed(() => isTwilioMediaTemplate(props.template));
 
 const hasVariables = computed(() => {
@@ -81,7 +81,7 @@ const renderedTemplate = computed(() => {
   return rendered;
 });
 
-// Completeness validation is shared with the mobile app via @chatwoot/utils.
+// Completeness validation is shared with the mobile app via @@WOODESK_UTILS_DEP@@.
 const isFormInvalid = computed(
   () => !isTwilioComplete(props.template, processedParams.value)
 );

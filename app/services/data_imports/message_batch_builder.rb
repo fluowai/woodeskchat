@@ -102,9 +102,9 @@ class DataImports::MessageBatchBuilder
     mapped_message_ids = mappings.values.filter_map do |mapping|
       mapping.chatwoot_record_id if mapping.chatwoot_record_type == 'Message'
     end
-    chatwoot_source_ids = source_entries.map { |entry| "#{@provider}:#{entry[:source_id]}" }
+    woodesk_source_ids = source_entries.map { |entry| "#{@provider}:#{entry[:source_id]}" }
     messages = Message.where(id: mapped_message_ids).or(
-      Message.where(conversation_id: @conversation.id, source_id: chatwoot_source_ids)
+      Message.where(conversation_id: @conversation.id, source_id: woodesk_source_ids)
     ).to_a
 
     {

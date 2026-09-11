@@ -1,16 +1,16 @@
 openapi: '3.1.0'
 info:
-  title: Chatwoot - Client API
-  description: Client API endpoints for Chatwoot
+  title: Woodesk - Client API
+  description: Client API endpoints for Woodesk
   version: 1.1.0
-  termsOfService: https://www.chatwoot.com/terms-of-service/
+  termsOfService: https://www.woodesk.com/terms-of-service/
   contact:
-    email: hello@chatwoot.com
+    email: hello@woodesk.com
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
 servers:
-  - url: https://app.chatwoot.com/
+  - url: https://app.woodesk.com/
 tags:
   - name: Contacts API
     description: APIs for managing contacts from client applications

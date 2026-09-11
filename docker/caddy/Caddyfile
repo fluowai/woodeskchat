@@ -12,14 +12,13 @@
 }
 
 {$CADDY_DOMAIN} {
-    # Security headers (HSTS only meaningful because Caddy enforces TLS).
+    # Security headers — CSP is served by Rails (nonce-aware, dynamic).
+    # Caddy adds transport/security headers only; no Content-Security-Policy here.
     header {
         Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
         X-Content-Type-Options "nosniff"
         X-Frame-Options "SAMEORIGIN"
         Referrer-Policy "strict-origin-when-cross-origin"
-        # CSP: allow self + widget inline assets; tighten as needed.
-        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https: blob:; font-src 'self' https: data:; connect-src 'self' wss: https:; frame-ancestors 'self'; object-src 'none'"
     }
 
     encode gzip

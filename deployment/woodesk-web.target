@@ -1,0 +1,6 @@
+[Unit]
+Description=Woodesk Web Server
+Wants=woodesk-web.1.service
+
+[Install]
+WantedBy=multi-user.target

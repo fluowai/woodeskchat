@@ -199,7 +199,7 @@ class Captain::Conversation::ResponseBuilderJob < ApplicationJob
   end
 
   def log_error(error)
-    ChatwootExceptionTracker.new(error, account: account).capture_exception
+    WoodeskExceptionTracker.new(error, account: account).capture_exception
   end
 
   def error_action_reason(error)
@@ -212,7 +212,7 @@ class Captain::Conversation::ResponseBuilderJob < ApplicationJob
 
   def report_v1_handoff_not_executed
     error = StandardError.new("Captain V1 handoff requested but conversation #{@conversation.display_id} is still pending")
-    ChatwootExceptionTracker.new(error, account: account).capture_exception
+    WoodeskExceptionTracker.new(error, account: account).capture_exception
     Rails.logger.error(
       "[CAPTAIN][ResponseBuilderJob] V1 handoff requested but not executed for account=#{account.id} " \
       "conversation=#{@conversation.display_id}"

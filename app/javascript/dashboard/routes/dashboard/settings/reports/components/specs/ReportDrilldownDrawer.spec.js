@@ -1,6 +1,6 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import { formatTime } from '@chatwoot/utils';
+import { formatTime } from '@@WOODESK_UTILS_DEP@@';
 import ReportsAPI from 'dashboard/api/reports';
 import ReportDrilldownDrawer from '../ReportDrilldownDrawer.vue';
 

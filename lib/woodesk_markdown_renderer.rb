@@ -1,4 +1,4 @@
-class ChatwootMarkdownRenderer
+class WoodeskMarkdownRenderer
   def initialize(content)
     @content = content
   end

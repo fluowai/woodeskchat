@@ -22,19 +22,21 @@ afterEach(() => {
 
 describe('#messageStamp', () => {
   it('returns correct value', () => {
-    expect(messageStamp(1612971343)).toEqual('3:35 PM');
-    expect(messageStamp(1612971343, 'LLL d, h:mm a')).toEqual(
-      'Feb 10, 3:35 PM'
+    expect(messageStamp(1612971343)).toEqual('15:35');
+    expect(messageStamp(1612971343, 'dd/MM/yyyy HH:mm')).toEqual(
+      '10/02/2021 15:35'
     );
   });
 });
 
 describe('#messageTimestamp', () => {
   it('should return the message date in the specified format if the message was sent in the current year', () => {
-    expect(messageTimestamp(1680777464)).toEqual('Apr 6, 2023');
+    expect(messageTimestamp(1680777464)).toEqual('06/04/2023');
   });
   it('should return the message date and time in a different format if the message was sent in a different year', () => {
-    expect(messageTimestamp(1612971343)).toEqual('Feb 10 2021, 3:35 PM');
+    expect(messageTimestamp(1612971343)).toEqual(
+      '10 de fevereiro de 2021 às 15:35'
+    );
   });
 });
 
@@ -44,46 +46,45 @@ describe('#relativeDayTimestamp', () => {
 
   it('returns the time for timestamps from today', () => {
     const today = toUnix(Date.UTC(2023, 4, 5, 15, 35, 0));
-    expect(relativeDayTimestamp(today, 'Yesterday')).toEqual('3:35 PM');
+    expect(relativeDayTimestamp(today, 'Ontem')).toEqual('15:35');
   });
 
   it('returns the supplied label for timestamps from yesterday', () => {
     const yesterday = toUnix(Date.UTC(2023, 4, 4, 9, 0, 0));
-    expect(relativeDayTimestamp(yesterday, 'Yesterday')).toEqual('Yesterday');
+    expect(relativeDayTimestamp(yesterday, 'Ontem')).toEqual('Ontem');
   });
 
   it('returns a day and month for older timestamps in the current year', () => {
     const earlierThisYear = toUnix(Date.UTC(2023, 1, 10, 12, 0, 0));
-    expect(relativeDayTimestamp(earlierThisYear, 'Yesterday')).toEqual(
-      'Feb 10'
-    );
+    expect(relativeDayTimestamp(earlierThisYear, 'Ontem')).toEqual('10/02');
   });
 
   it('returns a full date for timestamps from a previous year', () => {
     const lastYear = toUnix(Date.UTC(2021, 1, 10, 12, 0, 0));
-    expect(relativeDayTimestamp(lastYear, 'Yesterday')).toEqual('Feb 10, 2021');
+    expect(relativeDayTimestamp(lastYear, 'Ontem')).toEqual('10/02/2021');
   });
 });
 
 describe('#dynamicTime', () => {
   it('returns correct value', () => {
     Date.now = vi.fn(() => new Date(Date.UTC(2023, 1, 14)).valueOf());
-    expect(dynamicTime(1612971343)).toEqual('about 2 years ago');
+    expect(dynamicTime(1612971343)).toEqual('há cerca de 2 anos');
   });
 });
 
 describe('#dateFormat', () => {
   it('returns correct value', () => {
-    expect(dateFormat(1612971343)).toEqual('Feb 10, 2021');
-    expect(dateFormat(1612971343, 'LLL d, yyyy')).toEqual('Feb 10, 2021');
+    expect(dateFormat(1612971343)).toEqual('10/02/2021');
+    expect(dateFormat(1612971343, 'dd/MM/yyyy')).toEqual('10/02/2021');
   });
 });
 
 describe('#shortTimestamp', () => {
-  // Test cases when withAgo is false or not provided
-  it('returns correct value without ago', () => {
+  // Test cases when withAgo is false or not provided — English inputs.
+  it('returns correct value without ago (English)', () => {
     expect(shortTimestamp('in less than a minute')).toEqual('now');
     expect(shortTimestamp('less than a minute ago')).toEqual('now');
+    expect(shortTimestamp('now')).toEqual('now');
     expect(shortTimestamp('1 minute ago')).toEqual('1m');
     expect(shortTimestamp('12 minutes ago')).toEqual('12m');
     expect(shortTimestamp('a minute ago')).toEqual('1m');
@@ -101,8 +102,8 @@ describe('#shortTimestamp', () => {
     expect(shortTimestamp('4 years ago')).toEqual('4y');
   });
 
-  // Test cases when withAgo is true
-  it('returns correct value with ago', () => {
+  // Test cases when withAgo is true — English inputs.
+  it('returns correct value with ago (English)', () => {
     expect(shortTimestamp('less than a minute ago', true)).toEqual('now');
     expect(shortTimestamp('1 minute ago', true)).toEqual('1m ago');
     expect(shortTimestamp('12 minutes ago', true)).toEqual('12m ago');
@@ -119,6 +120,33 @@ describe('#shortTimestamp', () => {
     expect(shortTimestamp('a year ago', true)).toEqual('1y ago');
     expect(shortTimestamp('1 year ago', true)).toEqual('1y ago');
     expect(shortTimestamp('4 years ago', true)).toEqual('4y ago');
+  });
+
+  // Test cases for Brazilian Portuguese inputs (date-fns pt-BR output).
+  it('returns correct value without ago (pt-BR)', () => {
+    expect(shortTimestamp('agora')).toEqual('now');
+    expect(shortTimestamp('há menos de um minuto')).toEqual('now');
+    expect(shortTimestamp('1 minuto atrás')).toEqual('1m');
+    expect(shortTimestamp('há 2 minutos')).toEqual('2m');
+    expect(shortTimestamp('há 1 hora')).toEqual('1h');
+    expect(shortTimestamp('há 2 horas')).toEqual('2h');
+    expect(shortTimestamp('há 1 dia')).toEqual('1d');
+    expect(shortTimestamp('há 2 dias')).toEqual('2d');
+    expect(shortTimestamp('há cerca de 1 mês')).toEqual('1mo');
+    expect(shortTimestamp('há 2 meses')).toEqual('2mo');
+    expect(shortTimestamp('há cerca de 1 ano')).toEqual('1y');
+    expect(shortTimestamp('há quase 1 ano')).toEqual('1y');
+    expect(shortTimestamp('há mais de 2 anos')).toEqual('2y');
+    expect(shortTimestamp('há 4 anos')).toEqual('4y');
+  });
+
+  // Test cases when withAgo is true — pt-BR inputs.
+  it('returns correct value with ago (pt-BR)', () => {
+    expect(shortTimestamp('há 2 minutos', true)).toEqual('2m ago');
+    expect(shortTimestamp('há 1 hora', true)).toEqual('1h ago');
+    expect(shortTimestamp('há 3 dias', true)).toEqual('3d ago');
+    expect(shortTimestamp('há 2 meses', true)).toEqual('2mo ago');
+    expect(shortTimestamp('há 4 anos', true)).toEqual('4y ago');
   });
 });
 

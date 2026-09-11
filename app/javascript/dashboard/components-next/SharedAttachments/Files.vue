@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n';
 import { useAlert } from 'dashboard/composables';
 import { formatBytes } from 'shared/helpers/FileHelper';
 import { dynamicTime, shortTimestamp } from 'shared/helpers/timeHelper';
-import { downloadFile } from '@chatwoot/utils';
+import { downloadFile } from '@@WOODESK_UTILS_DEP@@';
 import {
   MEDIA_TYPES,
   NON_FILE_TYPES,

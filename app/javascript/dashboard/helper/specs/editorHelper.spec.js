@@ -920,7 +920,7 @@ describe('stripUnsupportedFormatting', () => {
     });
 
     it('preserves email autolinks', () => {
-      const content = 'Contact us at <support@chatwoot.com>';
+      const content = 'Contact us at <support@woodesk.com>';
       expect(stripUnsupportedFormatting(content, fullSchema)).toBe(content);
     });
 
@@ -958,10 +958,10 @@ describe('stripUnsupportedFormatting', () => {
       // Underscores in URLs should not be stripped as italic formatting
       expect(
         stripUnsupportedFormatting(
-          'https://www.chatwoot.com/new_first_second-third/ssd',
+          'https://www.woodesk.com/new_first_second-third/ssd',
           emptySchema
         )
-      ).toBe('https://www.chatwoot.com/new_first_second-third/ssd');
+      ).toBe('https://www.woodesk.com/new_first_second-third/ssd');
 
       // Underscores in variable names should not be stripped
       expect(
@@ -1080,8 +1080,8 @@ describe('stripUnsupportedFormatting', () => {
     });
 
     it('converts email autolinks to plain text', () => {
-      const content = 'Reach us at <admin@chatwoot.com> for help';
-      const expected = 'Reach us at admin@chatwoot.com for help';
+      const content = 'Reach us at <admin@woodesk.com> for help';
+      const expected = 'Reach us at admin@woodesk.com for help';
       expect(stripUnsupportedFormatting(content, emptySchema)).toBe(expected);
     });
 

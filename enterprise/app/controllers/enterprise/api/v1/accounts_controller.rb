@@ -97,7 +97,7 @@ class Enterprise::Api::V1::AccountsController < Api::BaseController
   end
 
   def check_cloud_env
-    render json: { error: 'Not found' }, status: :not_found unless ChatwootApp.chatwoot_cloud?
+    render json: { error: 'Not found' }, status: :not_found unless WoodeskApp.woodesk_cloud?
   end
 
   def ensure_stripe_customer

@@ -7,7 +7,7 @@ import FBChannel from '../../api/channel/fbChannel';
 import TwilioChannel from '../../api/channel/twilioChannel';
 import WhatsappChannel from '../../api/channel/whatsappChannel';
 import { throwErrorMessage } from '../utils/api';
-import { isSendableTemplate } from '@chatwoot/utils';
+import { isSendableTemplate } from '@@WOODESK_UTILS_DEP@@';
 import AnalyticsHelper from '../../helper/AnalyticsHelper';
 import camelcaseKeys from 'camelcase-keys';
 import { ACCOUNT_EVENTS } from '../../helper/AnalyticsHelper/events';
@@ -68,7 +68,7 @@ export const getters = {
       return [];
     }
 
-    // Sendable-template filtering is shared with the mobile app via @chatwoot/utils.
+    // Sendable-template filtering is shared with the mobile app via @@WOODESK_UTILS_DEP@@.
     return templates.filter(isSendableTemplate);
   },
   getNewConversationInboxes($state) {

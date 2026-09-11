@@ -1,5 +1,5 @@
 <script>
-import { debounce } from '@chatwoot/utils';
+import { debounce } from '@@WOODESK_UTILS_DEP@@';
 import { useAlert } from 'dashboard/composables';
 import { mapGetters } from 'vuex';
 import allLocales from 'shared/constants/locales.js';

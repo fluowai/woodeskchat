@@ -1,7 +1,7 @@
 <script setup>
 import { computed, h, watch, ref } from 'vue';
 import { useI18n } from 'vue-i18n';
-import { debounce } from '@chatwoot/utils';
+import { debounce } from '@@WOODESK_UTILS_DEP@@';
 import Button from 'next/button/Button.vue';
 import Input from 'dashboard/components-next/input/Input.vue';
 import FilterSelect from './inputs/FilterSelect.vue';

@@ -33,7 +33,7 @@ RSpec.describe 'Api::V1::Accounts::Captain::MessageReports', type: :request do
       end
     end
 
-    context 'when the installation is not on Chatwoot cloud' do
+    context 'when the installation is not on Woodesk cloud' do
       before { InstallationConfig.where(name: 'DEPLOYMENT_ENV').first_or_initialize.update!(value: 'self_hosted') }
 
       it 'returns not found' do
@@ -51,7 +51,7 @@ RSpec.describe 'Api::V1::Accounts::Captain::MessageReports', type: :request do
       end
     end
 
-    context 'when on Chatwoot cloud' do
+    context 'when on Woodesk cloud' do
       before { InstallationConfig.where(name: 'DEPLOYMENT_ENV').first_or_initialize.update!(value: 'cloud') }
 
       it 'creates a message report for the reporting agent' do

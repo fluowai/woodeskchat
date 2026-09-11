@@ -1,4 +1,4 @@
-<%= CSVSafe.generate_line [I18n.t('reports.period', since: Date.strptime(params[:since], '%s'), until: Date.strptime(params[:until], '%s'))] %>
+<%= CSVSafe.generate_line [I18n.t('reports.period', since: I18n.l(Date.strptime(params[:since], '%s'), format: :short), until: I18n.l(Date.strptime(params[:until], '%s'), format: :short))] %>
 
 <% headers = [
     I18n.t('reports.agent_csv.agent_name'),

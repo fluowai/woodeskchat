@@ -70,7 +70,7 @@ import {
   hasPressedCommandAndEnter,
   isEscape,
 } from 'shared/helpers/KeyboardHelpers';
-import { createTypingIndicator } from '@chatwoot/utils';
+import { createTypingIndicator } from '@@WOODESK_UTILS_DEP@@';
 import { checkFileSizeLimit } from 'shared/helpers/FileHelper';
 import { uploadFile } from 'dashboard/helper/uploadHelper';
 import { INBOX_TYPES } from 'dashboard/helper/inbox';

@@ -15,7 +15,7 @@ const mountComposable = ({
   brandInfo,
   features = { channel_instagram: true },
   inboxes = [],
-  isOnChatwootCloud = false,
+  isOnWoodeskCloud = false,
   disableMetaInboxCreation = false,
 } = {}) => {
   const store = createStore({
@@ -24,9 +24,9 @@ const mountComposable = ({
         namespaced: true,
         getters: {
           get: () => ({}),
-          isOnChatwootCloud: () => isOnChatwootCloud,
+          isOnWoodeskCloud: () => isOnWoodeskCloud,
           isMetaInboxCreationDisabled: () =>
-            isOnChatwootCloud && disableMetaInboxCreation,
+            isOnWoodeskCloud && disableMetaInboxCreation,
           isMetaMessageSendingDisabled: () => false,
         },
       },
@@ -64,7 +64,7 @@ beforeEach(() => {
   useRoute.mockReturnValue({ params: { accountId: '1' } });
   // Configure the installation OAuth credentials so detected channels aren't
   // hidden by the config gate; individual tests clear this to assert hiding.
-  window.chatwootConfig = {
+  window.woodeskConfig = {
     fbAppId: 'fb',
     instagramAppId: 'ig',
     tiktokAppId: 'tt',
@@ -74,7 +74,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  delete window.chatwootConfig;
+  delete window.woodeskConfig;
 });
 
 describe('useDetectedChannels', () => {
@@ -188,7 +188,7 @@ describe('useDetectedChannels', () => {
     });
 
     it('gates the default suggestions by installation config, keeping the list non-empty', () => {
-      window.chatwootConfig = {}; // no OAuth credentials configured
+      window.woodeskConfig = {}; // no OAuth credentials configured
       const { displayedChannels } = mountComposable({ brandInfo: undefined });
 
       // Only the credential-free defaults survive (Telegram, LINE).
@@ -199,7 +199,7 @@ describe('useDetectedChannels', () => {
     });
 
     it('hides detected channels whose installation OAuth credentials are missing', () => {
-      window.chatwootConfig = {}; // nothing configured
+      window.woodeskConfig = {}; // nothing configured
       const { displayedChannels } = mountComposable({
         brandInfo: {
           socials: [
@@ -215,13 +215,13 @@ describe('useDetectedChannels', () => {
       ]);
     });
 
-    it('hides Meta channels on Chatwoot Cloud during the Meta restriction', () => {
+    it('hides Meta channels on Woodesk Cloud during the Meta restriction', () => {
       const { displayedChannels } = mountComposable({
         features: {
           channel_instagram: true,
           whatsapp_embedded_signup_inbox_creation: true,
         },
-        isOnChatwootCloud: true,
+        isOnWoodeskCloud: true,
         disableMetaInboxCreation: true,
         brandInfo: {
           socials: [
@@ -241,7 +241,7 @@ describe('useDetectedChannels', () => {
     it('hides Instagram when disabled for the account', () => {
       const { displayedChannels } = mountComposable({
         features: { channel_instagram: false },
-        isOnChatwootCloud: true,
+        isOnWoodeskCloud: true,
         brandInfo: {
           socials: [
             { type: 'instagram', url: 'https://instagram.com/acme' },
@@ -296,7 +296,7 @@ describe('useDetectedChannels', () => {
     });
 
     it('excludes channels whose installation OAuth credentials are missing', () => {
-      window.chatwootConfig = {}; // nothing configured
+      window.woodeskConfig = {}; // nothing configured
       const { remainingChannels } = mountComposable({ brandInfo: {} });
 
       // The only configured channels (Telegram, LINE) are shown as default rows,

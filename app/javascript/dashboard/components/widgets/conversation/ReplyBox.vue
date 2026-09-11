@@ -26,12 +26,12 @@ import { CMD_AI_ASSIST } from 'dashboard/helper/commandbar/events';
 import {
   getMessageVariables,
   getUndefinedVariablesInMessage,
-} from '@chatwoot/utils';
+} from '@@WOODESK_UTILS_DEP@@';
 import WhatsappTemplates from './WhatsappTemplates/Modal.vue';
 import ContentTemplates from './ContentTemplates/ContentTemplatesModal.vue';
 import { MESSAGE_MAX_LENGTH } from 'shared/helpers/MessageTypeHelper';
 import inboxMixin, { INBOX_FEATURES } from 'shared/mixins/inboxMixin';
-import { trimContent, debounce, getRecipients } from '@chatwoot/utils';
+import { trimContent, debounce, getRecipients } from '@@WOODESK_UTILS_DEP@@';
 import wootConstants from 'dashboard/constants/globals';
 import {
   extractQuotedEmailText,

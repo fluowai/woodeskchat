@@ -8,7 +8,7 @@ RSpec.describe Internal::Accounts::MarketingAttributionService do
   let(:cookies) { {} }
 
   before do
-    allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(true)
+    allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(true)
   end
 
   it 'stores website attribution cookies on the account' do
@@ -16,7 +16,7 @@ RSpec.describe Internal::Accounts::MarketingAttributionService do
       'source' => 'reddit',
       'source_type' => 'paid_social',
       'referrer' => 'https://reddit.com',
-      'referrer_path' => '/r/selfhosted/comments/123/chatwoot'
+      'referrer_path' => '/r/selfhosted/comments/123/woodesk'
     )
     cookies[described_class::LAST_TOUCH_COOKIE] = encoded_cookie(
       'source' => 'github',
@@ -28,7 +28,7 @@ RSpec.describe Internal::Accounts::MarketingAttributionService do
     attribution = account.reload.internal_attributes['marketing_attribution']
     expect(attribution['captured_from']).to eq('cookie')
     expect(attribution['first_touch']['source']).to eq('reddit')
-    expect(attribution['first_touch']['referrer_path']).to eq('/r/selfhosted/comments/123/chatwoot')
+    expect(attribution['first_touch']['referrer_path']).to eq('/r/selfhosted/comments/123/woodesk')
     expect(attribution['last_touch']['source']).to eq('github')
   end
 
@@ -41,8 +41,8 @@ RSpec.describe Internal::Accounts::MarketingAttributionService do
       .with(account.id, 'cloud_signup', account.created_at)
   end
 
-  it 'does not store attribution outside Chatwoot Cloud' do
-    allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(false)
+  it 'does not store attribution outside Woodesk Cloud' do
+    allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(false)
     cookies[described_class::LAST_TOUCH_COOKIE] = encoded_cookie('source' => 'reddit')
 
     described_class.new(account: account, cookies: cookies).perform

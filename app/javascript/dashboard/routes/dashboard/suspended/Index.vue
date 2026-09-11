@@ -6,26 +6,26 @@ import { useAdmin } from 'dashboard/composables/useAdmin';
 import { useMapGetter } from 'dashboard/composables/store';
 
 const { isAdmin } = useAdmin();
-const isOnChatwootCloud = useMapGetter('globalConfig/isOnChatwootCloud');
+const isOnWoodeskCloud = useMapGetter('globalConfig/isOnWoodeskCloud');
 
 const showBillingLink = computed(
-  () => isAdmin.value && isOnChatwootCloud.value
+  () => isAdmin.value && isOnWoodeskCloud.value
 );
 
 const toggleSupportWidgetVisibility = () => {
-  if (window.$chatwoot) {
-    window.$chatwoot.toggleBubbleVisibility('show');
+  if (window.$woodesk) {
+    window.$woodesk.toggleBubbleVisibility('show');
   }
 };
 
 const toggleSupportWidget = () => {
-  if (window.$chatwoot) {
-    window.$chatwoot.toggle();
+  if (window.$woodesk) {
+    window.$woodesk.toggle();
   }
 };
 
 const setupListenerForWidgetEvent = () => {
-  window.addEventListener('chatwoot:on-message', () => {
+  window.addEventListener('woodesk:on-message', () => {
     toggleSupportWidgetVisibility();
   });
 };

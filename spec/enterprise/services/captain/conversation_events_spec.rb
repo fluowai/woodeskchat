@@ -52,9 +52,9 @@ RSpec.describe Captain::ConversationEvents do
       assistant
       error = StandardError.new('redis down')
       allow(Rails.configuration.dispatcher).to receive(:dispatch).and_raise(error)
-      expect(ChatwootExceptionTracker).to receive(:new)
+      expect(WoodeskExceptionTracker).to receive(:new)
         .with(error, account: account)
-        .and_return(instance_double(ChatwootExceptionTracker, capture_exception: true))
+        .and_return(instance_double(WoodeskExceptionTracker, capture_exception: true))
 
       expect do
         described_class.handed_off(

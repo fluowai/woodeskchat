@@ -37,7 +37,7 @@ class Messages::AudioTranscriptionService
     attachment.update!(meta: { transcribed_text: transcribed_text })
     message.reload.send_update_event
 
-    return unless ChatwootApp.advanced_search_allowed?
+    return unless WoodeskApp.advanced_search_allowed?
 
     message.reindex
   end

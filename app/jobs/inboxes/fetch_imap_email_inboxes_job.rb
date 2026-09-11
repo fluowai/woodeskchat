@@ -19,7 +19,7 @@ class Inboxes::FetchImapEmailInboxesJob < ApplicationJob
     return false unless inbox.channel.imap_enabled
     return false if inbox.channel.reauthorization_required?
 
-    return true unless ChatwootApp.chatwoot_cloud?
+    return true unless WoodeskApp.woodesk_cloud?
     return false if default_plan?(inbox.account)
 
     true

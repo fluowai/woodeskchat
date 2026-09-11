@@ -39,7 +39,7 @@
 #
 
 class Message < ApplicationRecord
-  searchkick callbacks: false if ChatwootApp.advanced_search_allowed?
+  searchkick callbacks: false if WoodeskApp.advanced_search_allowed?
 
   include MessageFilterHelpers
   include Liquidable
@@ -250,9 +250,9 @@ class Message < ApplicationRecord
   end
 
   def should_index?
-    return false unless ChatwootApp.advanced_search_allowed?
+    return false unless WoodeskApp.advanced_search_allowed?
     return false unless incoming? || outgoing?
-    # For Chatwoot Cloud:
+    # For Woodesk Cloud:
     #   - Enable indexing only if the account is paid.
     #   - The `advanced_search_indexing` feature flag is used only in the cloud.
     #
@@ -260,7 +260,7 @@ class Message < ApplicationRecord
     #   - Adding an extra feature flag here would cause confusion.
     #   - If the user has configured Elasticsearch, enabling `advanced_search`
     #     should automatically work without any additional flags.
-    return false if ChatwootApp.chatwoot_cloud? && !account.feature_enabled?('advanced_search_indexing')
+    return false if WoodeskApp.woodesk_cloud? && !account.feature_enabled?('advanced_search_indexing')
 
     true
   end

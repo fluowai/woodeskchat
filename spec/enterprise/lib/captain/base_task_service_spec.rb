@@ -7,8 +7,8 @@ RSpec.describe Captain::BaseTaskService, type: :model do
   let(:perform_result) { { message: 'Test response' } }
   let(:exhausted_usage_limits) do
     {
-      agents: ChatwootApp.max_limit,
-      inboxes: ChatwootApp.max_limit,
+      agents: WoodeskApp.max_limit,
+      inboxes: WoodeskApp.max_limit,
       captain: { responses: { current_available: 0 } }
     }
   end
@@ -44,7 +44,7 @@ RSpec.describe Captain::BaseTaskService, type: :model do
 
     context 'when usage limit is exceeded' do
       before do
-        allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(true)
+        allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(true)
         allow(account).to receive(:usage_limits).and_return(exhausted_usage_limits)
       end
 
@@ -129,7 +129,7 @@ RSpec.describe Captain::BaseTaskService, type: :model do
 
       context 'when the captain_responses quota is exhausted on Cloud' do
         before do
-          allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(true)
+          allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(true)
           allow(account).to receive(:usage_limits).and_return(exhausted_usage_limits)
         end
 
@@ -164,7 +164,7 @@ RSpec.describe Captain::BaseTaskService, type: :model do
 
       context 'when the captain_responses quota is exhausted on Cloud' do
         before do
-          allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(true)
+          allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(true)
           allow(account).to receive(:usage_limits).and_return(exhausted_usage_limits)
         end
 
@@ -180,9 +180,9 @@ RSpec.describe Captain::BaseTaskService, type: :model do
         allow(account).to receive(:feature_enabled?).with('captain_tasks').and_return(false)
       end
 
-      context 'when on Chatwoot Cloud' do
+      context 'when on Woodesk Cloud' do
         before do
-          allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(true)
+          allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(true)
         end
 
         it 'returns upgrade error message' do
@@ -198,7 +198,7 @@ RSpec.describe Captain::BaseTaskService, type: :model do
 
       context 'when self-hosted' do
         before do
-          allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(false)
+          allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(false)
         end
 
         it 'returns disabled error message' do
@@ -249,7 +249,7 @@ RSpec.describe Captain::BaseTaskService, type: :model do
 
       context 'when the captain_responses quota is exhausted on Cloud' do
         before do
-          allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(true)
+          allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(true)
           allow(account).to receive(:usage_limits).and_return(exhausted_usage_limits)
         end
 

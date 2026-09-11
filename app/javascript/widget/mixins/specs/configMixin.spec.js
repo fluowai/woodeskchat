@@ -21,7 +21,7 @@ const preChatFields = [
   },
 ];
 
-global.chatwootWebChannel = {
+global.woodeskWebChannel = {
   avatarUrl: 'https://test.url',
   hasAConnectedAgentBot: 'AgentBot',
   enabledFeatures: [
@@ -40,7 +40,7 @@ describe('configMixin', () => {
       mixins: [configMixin],
       data() {
         return {
-          channelConfig: reactive(global.chatwootWebChannel),
+          channelConfig: reactive(global.woodeskWebChannel),
         };
       },
       template: '<div />', // Render a simple div as the template

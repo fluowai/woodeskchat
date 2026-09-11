@@ -1,5 +1,5 @@
 class Enterprise::Billing::ReconcilePlanFeaturesService
-  CLOUD_PLANS_CONFIG = 'CHATWOOT_CLOUD_PLANS'.freeze
+  CLOUD_PLANS_CONFIG = 'WOODESK_CLOUD_PLANS'.freeze
 
   # Plan hierarchy: Hacker (default) -> Startups -> Business -> Enterprise
   # Each higher tier includes all features from the lower tiers

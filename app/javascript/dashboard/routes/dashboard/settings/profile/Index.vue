@@ -7,7 +7,7 @@ import { useBranding } from 'shared/composables/useBranding';
 import { clearCookiesOnLogout } from 'dashboard/store/utils/api.js';
 import { copyTextToClipboard } from 'shared/helpers/clipboard';
 import { parseAPIErrorResponse } from 'dashboard/store/utils/api';
-import { parseBoolean } from '@chatwoot/utils';
+import { parseBoolean } from '@@WOODESK_UTILS_DEP@@';
 import UserProfilePicture from './UserProfilePicture.vue';
 import UserBasicDetails from './UserBasicDetails.vue';
 import MessageSignature from './MessageSignature.vue';
@@ -101,10 +101,10 @@ export default {
       currentUser: 'getCurrentUser',
       currentUserId: 'getCurrentUserID',
       globalConfig: 'globalConfig/get',
-      isOnChatwootCloud: 'globalConfig/isOnChatwootCloud',
+      isOnWoodeskCloud: 'globalConfig/isOnWoodeskCloud',
     }),
     apiAndWebhooksEnabled() {
-      if (!this.isOnChatwootCloud) return true;
+      if (!this.isOnWoodeskCloud) return true;
 
       return this.currentUser.accounts.some(
         account => account.api_and_webhooks
@@ -120,7 +120,7 @@ export default {
       );
     },
     isMfaEnabled() {
-      return parseBoolean(window.chatwootConfig?.isMfaEnabled);
+      return parseBoolean(window.woodeskConfig?.isMfaEnabled);
     },
   },
   mounted() {

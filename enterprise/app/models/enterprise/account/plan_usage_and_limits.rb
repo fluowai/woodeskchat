@@ -28,7 +28,7 @@ module Enterprise::Account::PlanUsageAndLimits # rubocop:disable Metrics/ModuleL
   end
 
   def email_transcript_enabled?
-    default_plan = InstallationConfig.find_by(name: 'CHATWOOT_CLOUD_PLANS')&.value&.first
+    default_plan = InstallationConfig.find_by(name: 'WOODESK_CLOUD_PLANS')&.value&.first
     return true if default_plan.blank?
 
     plan_name.present? && plan_name != default_plan['name']
@@ -39,7 +39,7 @@ module Enterprise::Account::PlanUsageAndLimits # rubocop:disable Metrics/ModuleL
   end
 
   def subscribed_features
-    plan_features = InstallationConfig.find_by(name: 'CHATWOOT_CLOUD_PLAN_FEATURES')&.value
+    plan_features = InstallationConfig.find_by(name: 'WOODESK_CLOUD_PLAN_FEATURES')&.value
     return [] if plan_features.blank?
 
     plan_features[plan_name]
@@ -93,12 +93,12 @@ module Enterprise::Account::PlanUsageAndLimits # rubocop:disable Metrics/ModuleL
   end
 
   def free_plan?
-    default_plan = InstallationConfig.find_by(name: 'CHATWOOT_CLOUD_PLANS')&.value&.first
+    default_plan = InstallationConfig.find_by(name: 'WOODESK_CLOUD_PLANS')&.value&.first
     default_plan.present? && plan_name&.downcase == default_plan['name']&.downcase
   end
 
   def default_captain_limits
-    max_limits = { documents: ChatwootApp.max_limit, responses: ChatwootApp.max_limit }.with_indifferent_access
+    max_limits = { documents: WoodeskApp.max_limit, responses: WoodeskApp.max_limit }.with_indifferent_access
     zero_limits = { documents: 0, responses: 0 }.with_indifferent_access
     plan_quota = InstallationConfig.find_by(name: 'CAPTAIN_CLOUD_PLAN_LIMITS')&.value
 
@@ -135,7 +135,7 @@ module Enterprise::Account::PlanUsageAndLimits # rubocop:disable Metrics/ModuleL
 
     return GlobalConfig.get(config_name)[config_name] if GlobalConfig.get(config_name)[config_name].present?
 
-    ChatwootApp.max_limit
+    WoodeskApp.max_limit
   end
 
   # Atomic jsonb_set to avoid clobbering concurrent writes to other custom_attributes keys.

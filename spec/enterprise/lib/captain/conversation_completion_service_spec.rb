@@ -29,8 +29,8 @@ RSpec.describe Captain::ConversationCompletionService do
         allow(mock_chat).to receive(:ask).and_return(mock_response)
       end
 
-      it 'uses the internal GPT-4.1 route on Chatwoot Cloud' do
-        allow(ChatwootApp).to receive(:self_hosted_enterprise?).and_return(false)
+      it 'uses the internal GPT-4.1 route on Woodesk Cloud' do
+        allow(WoodeskApp).to receive(:self_hosted_enterprise?).and_return(false)
         InstallationConfig.find_or_initialize_by(name: 'CAPTAIN_OPEN_AI_MODEL').update!(value: 'gpt-5.1')
         account.enable_features!('captain_integration_v2')
         allow(mock_context).to receive(:chat).with(model: 'gpt-4.1').and_return(mock_chat)
@@ -39,7 +39,7 @@ RSpec.describe Captain::ConversationCompletionService do
       end
 
       it 'uses the installation model on self-hosted Enterprise' do
-        allow(ChatwootApp).to receive(:self_hosted_enterprise?).and_return(true)
+        allow(WoodeskApp).to receive(:self_hosted_enterprise?).and_return(true)
         InstallationConfig.find_or_initialize_by(name: 'CAPTAIN_OPEN_AI_MODEL').update!(value: 'gpt-5.1')
         allow(mock_context).to receive(:chat).with(model: 'gpt-5.1').and_return(mock_chat)
 
@@ -47,7 +47,7 @@ RSpec.describe Captain::ConversationCompletionService do
       end
 
       it 'falls back to the internal GPT-4.1 route when the self-hosted installation model is blank' do
-        allow(ChatwootApp).to receive(:self_hosted_enterprise?).and_return(true)
+        allow(WoodeskApp).to receive(:self_hosted_enterprise?).and_return(true)
         InstallationConfig.find_or_initialize_by(name: 'CAPTAIN_OPEN_AI_MODEL').update!(value: '')
         allow(mock_context).to receive(:chat).with(model: 'gpt-4.1').and_return(mock_chat)
 
@@ -305,11 +305,11 @@ RSpec.describe Captain::ConversationCompletionService do
       end
 
       before do
-        allow(ChatwootApp).to receive(:chatwoot_cloud?).and_return(true)
+        allow(WoodeskApp).to receive(:woodesk_cloud?).and_return(true)
         allow(account).to receive(:usage_limits).and_return(
           {
-            agents: ChatwootApp.max_limit,
-            inboxes: ChatwootApp.max_limit,
+            agents: WoodeskApp.max_limit,
+            inboxes: WoodeskApp.max_limit,
             captain: { responses: { current_available: 0 } }
           }
         )

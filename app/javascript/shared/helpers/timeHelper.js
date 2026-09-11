@@ -8,30 +8,31 @@ import {
   formatDistanceToNow,
   differenceInDays,
 } from 'date-fns';
+import { locale as ptBR, formats as brFormats } from './brLocale';
 
 /**
  * Formats a Unix timestamp into a human-readable time format.
  * @param {number} time - Unix timestamp.
- * @param {string} [dateFormat='h:mm a'] - Desired format of the time.
+ * @param {string} [dateFormat='HH:mm'] - Desired format of the time.
  * @returns {string} Formatted time string.
  */
-export const messageStamp = (time, dateFormat = 'h:mm a') => {
+export const messageStamp = (time, dateFormat = brFormats.time) => {
   const unixTime = fromUnixTime(time);
-  return format(unixTime, dateFormat);
+  return format(unixTime, dateFormat, { locale: ptBR });
 };
 
 /**
  * Provides a formatted timestamp, adjusting the format based on the current year.
  * @param {number} time - Unix timestamp.
- * @param {string} [dateFormat='MMM d, yyyy'] - Desired date format.
+ * @param {string} [dateFormat='dd/MM/yyyy'] - Desired date format.
  * @returns {string} Formatted date string.
  */
-export const messageTimestamp = (time, dateFormat = 'MMM d, yyyy') => {
+export const messageTimestamp = (time, dateFormat = brFormats.date) => {
   const messageTime = fromUnixTime(time);
   const now = new Date();
-  const messageDate = format(messageTime, dateFormat);
+  const messageDate = format(messageTime, dateFormat, { locale: ptBR });
   if (!isSameYear(messageTime, now)) {
-    return format(messageTime, 'LLL d y, h:mm a');
+    return format(messageTime, brFormats.fullWithTime, { locale: ptBR });
   }
   return messageDate;
 };
@@ -46,71 +47,88 @@ export const messageTimestamp = (time, dateFormat = 'MMM d, yyyy') => {
  */
 export const relativeDayTimestamp = (time, yesterdayLabel) => {
   const date = fromUnixTime(time);
-  if (isToday(date)) return format(date, 'h:mm a');
+  if (isToday(date)) return format(date, brFormats.time, { locale: ptBR });
   if (isYesterday(date)) return yesterdayLabel;
-  if (isThisYear(date)) return format(date, 'MMM d');
-  return format(date, 'MMM d, yyyy');
+  if (isThisYear(date)) return format(date, brFormats.shortDate, { locale: ptBR });
+  return format(date, brFormats.date, { locale: ptBR });
 };
 
 /**
- * Converts a Unix timestamp to a relative time string (e.g., 3 hours ago).
+ * Converts a Unix timestamp to a relative time string (e.g., 3 horas atrás).
  * @param {number} time - Unix timestamp.
  * @returns {string} Relative time string.
  */
 export const dynamicTime = time => {
   const unixTime = fromUnixTime(time);
-  return formatDistanceToNow(unixTime, { addSuffix: true });
+  return formatDistanceToNow(unixTime, { addSuffix: true, locale: ptBR });
 };
 
 /**
  * Formats a Unix timestamp into a specified date format.
  * @param {number} time - Unix timestamp.
- * @param {string} [dateFormat='MMM d, yyyy'] - Desired date format.
+ * @param {string} [dateFormat='dd/MM/yyyy'] - Desired date format.
  * @returns {string} Formatted date string.
  */
-export const dateFormat = (time, df = 'MMM d, yyyy') => {
+export const dateFormat = (time, df = brFormats.date) => {
   const unixTime = fromUnixTime(time);
-  return format(unixTime, df);
+  return format(unixTime, df, { locale: ptBR });
 };
 
 /**
  * Converts a detailed time description into a shorter format, optionally appending 'ago'.
- * @param {string} time - Detailed time description (e.g., 'a minute ago').
+ * Supports English (legacy) and Portuguese (pt-BR) inputs.
+ * @param {string} time - Detailed time description (e.g., 'a minute ago' or 'há 2 minutos').
  * @param {boolean} [withAgo=false] - Whether to append 'ago' to the result.
  * @returns {string} Shortened time description.
  */
 export const shortTimestamp = (time, withAgo = false) => {
-  // This function takes a time string and converts it to a short time string
-  // with the following format: 1m, 1h, 1d, 1mo, 1y
-  // The function also takes an optional boolean parameter withAgo
-  // which will add the word "ago" to the end of the time string
+  // Handles both English ("3 minutes ago") and Brazilian Portuguese ("há 3 minutos")
+  // outputs. Converts to compact form: 1m, 1h, 1d, 1mo, 1y.
   const suffix = withAgo ? ' ago' : '';
-  const timeMappings = {
-    'less than a minute ago': 'now',
-    'in less than a minute': 'now',
-    'a minute ago': `1m${suffix}`,
-    'an hour ago': `1h${suffix}`,
-    'a day ago': `1d${suffix}`,
-    'a month ago': `1mo${suffix}`,
-    'a year ago': `1y${suffix}`,
-  };
-  // Check if the time string is one of the specific cases
-  if (timeMappings[time]) {
-    return timeMappings[time];
+
+  // Nothing to shorten (already now / empty).
+  if (!time || time === 'now' || time === 'agora') return 'now';
+
+  // Remove leading "in", trailing "ago"/"atrás" so the qualifiers below match.
+  const stripped = time
+    .replace(/\s+(ago|atr[áa]s)$/i, '')
+    .replace(/^in\s+/i, '')
+    .trim();
+
+  // Sub-minute → "now" (EN: "less than a minute", PT: "menos de um minuto").
+  if (/^(h[áa] )?(less than |menos de )(a|an|one|um|uma)?\s*\d*\s*(minute|minuto|second|segundo)s?$/i.test(stripped)) {
+    return 'now';
   }
-  const convertToShortTime = time
-    .replace(/about|over|almost|/g, '')
-    .replace(' minute ago', `m${suffix}`)
-    .replace(' minutes ago', `m${suffix}`)
-    .replace(' hour ago', `h${suffix}`)
-    .replace(' hours ago', `h${suffix}`)
-    .replace(' day ago', `d${suffix}`)
-    .replace(' days ago', `d${suffix}`)
-    .replace(' month ago', `mo${suffix}`)
-    .replace(' months ago', `mo${suffix}`)
-    .replace(' year ago', `y${suffix}`)
-    .replace(' years ago', `y${suffix}`);
-  return convertToShortTime;
+
+  // Strip qualifiers ("há", then "about/over/almost"/"cerca de/mais de/quase").
+  // "há" must come first so wrapped phrases like "há cerca de 1 mês" collapse.
+  let normalized = stripped;
+  for (const prefix of ['há', 'ha', 'about', 'over', 'almost', 'cerca de', 'mais de', 'quase']) {
+    normalized = normalized.replace(new RegExp(`^${prefix}\\s+`, 'i'), '');
+  }
+  normalized = normalized.replace(/\s+/g, ' ').trim();
+
+  // Number (digits or article/word) → unit → compact form.
+  const mappings = [
+    [/^(a|an|one|1|um|uma)\s*(minute|minuto)s?$/i, '1m'],
+    [/^(\d+)\s*(minute|minuto)s?$/i, '$1m'],
+    [/^(a|an|one|1|um|uma)\s*(hour|hora)s?$/i, '1h'],
+    [/^(\d+)\s*(hour|hora)s?$/i, '$1h'],
+    [/^(a|one|1|um)\s*(day|dia)s?$/i, '1d'],
+    [/^(\d+)\s*(day|dia)s?$/i, '$1d'],
+    [/^(a|one|1|um)\s*(month(s)?|m[êe]s|meses)$/i, '1mo'],
+    [/^(\d+)\s*(month(s)?|m[êe]s|meses)$/i, '$1mo'],
+    [/^(a|one|1|um)\s*(year|ano)s?$/i, '1y'],
+    [/^(\d+)\s*(year|ano)s?$/i, '$1y'],
+  ];
+
+  for (const [pattern, replacement] of mappings) {
+    if (normalized.match(pattern)) {
+      return `${normalized.replace(pattern, replacement)}${suffix}`;
+    }
+  }
+
+  return time;
 };
 
 /**

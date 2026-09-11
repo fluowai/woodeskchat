@@ -8,7 +8,7 @@ module Enterprise::Captain::ReplySuggestionService
   private
 
   def use_search_tool?
-    ChatwootApp.chatwoot_cloud? || ChatwootApp.self_hosted_enterprise?
+    WoodeskApp.woodesk_cloud? || WoodeskApp.self_hosted_enterprise?
   end
 
   def prompt_variables

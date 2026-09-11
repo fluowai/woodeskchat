@@ -18,7 +18,7 @@ module Billing
       
       {
         transaction_id: transaction_id,
-        copy_paste: "00020126580014br.gov.bcb.pix0136fake-asaas-or-mp-pix-key-#{transaction_id}5204000053039865802BR5925Chatwoot Payments LTDA6009Sao Paulo62070503***6304XXXX",
+        copy_paste: "00020126580014br.gov.bcb.pix0136fake-asaas-or-mp-pix-key-#{transaction_id}5204000053039865802BR5925Woodesk Payments LTDA6009Sao Paulo62070503***6304XXXX",
         provider: "asaas"
       }
     end

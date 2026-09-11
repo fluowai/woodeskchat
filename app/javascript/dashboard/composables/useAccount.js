@@ -14,7 +14,7 @@ export function useAccount() {
   const route = useRoute();
   const store = useStore();
   const getAccountFn = useMapGetter('accounts/getAccount');
-  const isOnChatwootCloud = useMapGetter('globalConfig/isOnChatwootCloud');
+  const isOnWoodeskCloud = useMapGetter('globalConfig/isOnWoodeskCloud');
   const isMetaInboxCreationDisabled = useMapGetter(
     'globalConfig/isMetaInboxCreationDisabled'
   );
@@ -69,7 +69,7 @@ export function useAccount() {
     accountScopedUrl,
     accountScopedRoute,
     isCloudFeatureEnabled,
-    isOnChatwootCloud,
+    isOnWoodeskCloud,
     isMetaInboxCreationDisabled,
     isMetaMessageSendingDisabled,
     updateAccount,

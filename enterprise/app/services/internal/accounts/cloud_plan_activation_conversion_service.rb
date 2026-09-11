@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Internal::Accounts::CloudPlanActivationConversionService
-  CLOUD_PLANS_CONFIG = 'CHATWOOT_CLOUD_PLANS'
+  CLOUD_PLANS_CONFIG = 'WOODESK_CLOUD_PLANS'
   PLAN_ACTIVATION_TRACKED_AT = 'cloud_plan_activation_tracked_at'
 
   pattr_initialize [:account!, :previous_plan_name!, :current_plan_name!, :activated_at!, :conversion_value!, :currency_code!]
 
   def perform
-    return unless ChatwootApp.chatwoot_cloud?
+    return unless WoodeskApp.woodesk_cloud?
 
     return unless previous_plan_name == default_plan_name && current_plan_name != default_plan_name
     return if marketing_attribution.blank? || marketing_attribution[PLAN_ACTIVATION_TRACKED_AT].present?

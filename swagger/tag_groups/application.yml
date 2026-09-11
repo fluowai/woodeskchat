@@ -1,16 +1,16 @@
 openapi: '3.1.0'
 info:
-  title: Chatwoot - Application API
-  description: Application API endpoints for Chatwoot
+  title: Woodesk - Application API
+  description: Application API endpoints for Woodesk
   version: 1.1.0
-  termsOfService: https://www.chatwoot.com/terms-of-service/
+  termsOfService: https://www.woodesk.com/terms-of-service/
   contact:
-    email: hello@chatwoot.com
+    email: hello@woodesk.com
   license:
     name: MIT License
     url: https://opensource.org/licenses/MIT
 servers:
-  - url: https://app.chatwoot.com/
+  - url: https://app.woodesk.com/
 tags:
   - name: Account AgentBots
     description: Manage agent bots within accounts

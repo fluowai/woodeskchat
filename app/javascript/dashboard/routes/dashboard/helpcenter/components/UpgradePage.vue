@@ -49,7 +49,7 @@ export default {
   computed: {
     ...mapGetters({
       accountId: 'getCurrentAccountId',
-      isOnChatwootCloud: 'globalConfig/isOnChatwootCloud', // Pending change text
+      isOnWoodeskCloud: 'globalConfig/isOnWoodeskCloud', // Pending change text
     }),
   },
   methods: {
@@ -81,14 +81,14 @@ export default {
           class="max-w-2xl text-base font-normal leading-6 text-left sm:text-center text-n-slate-11"
         >
           {{
-            isOnChatwootCloud
+            isOnWoodeskCloud
               ? $t('HELP_CENTER.UPGRADE_PAGE.DESCRIPTION')
               : $t('HELP_CENTER.UPGRADE_PAGE.SELF_HOSTED_DESCRIPTION')
           }}
         </p>
       </div>
       <div
-        v-if="isOnChatwootCloud"
+        v-if="isOnWoodeskCloud"
         class="flex flex-row gap-3 justify-start items-center sm:justify-center"
       >
         <NextButton

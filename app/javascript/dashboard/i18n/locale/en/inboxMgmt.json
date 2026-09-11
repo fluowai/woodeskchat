@@ -1345,7 +1345,7 @@
         "AGENT_MESSAGE": "Hello"
       },
       "BRANDING_TEXT": "Powered by WooTalk",
-      "SCRIPT_SETTINGS": "\n      window.chatwootSettings = {options};"
+      "SCRIPT_SETTINGS": "\n      window.woodeskSettings = {options};"
     },
     "EMAIL_PROVIDERS": {
       "MICROSOFT": {

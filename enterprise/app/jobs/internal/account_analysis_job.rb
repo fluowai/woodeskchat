@@ -2,7 +2,7 @@ class Internal::AccountAnalysisJob < ApplicationJob
   queue_as :low
 
   def perform(account)
-    return unless ChatwootApp.chatwoot_cloud?
+    return unless WoodeskApp.woodesk_cloud?
 
     Internal::AccountAnalysis::ThreatAnalyserService.new(account).perform
   end

@@ -312,11 +312,11 @@ RSpec.describe Captain::Conversation::ResponseBuilderJob, type: :job do
         it 'falls back to the assistant response when the classifier fails' do
           error = StandardError.new('classifier unavailable')
           allow(mock_action_classifier_service).to receive(:classify).and_raise(error)
-          allow(ChatwootExceptionTracker).to receive(:new).and_call_original
+          allow(WoodeskExceptionTracker).to receive(:new).and_call_original
 
           described_class.perform_now(conversation, assistant)
 
-          expect(ChatwootExceptionTracker).to have_received(:new).with(error, account: account)
+          expect(WoodeskExceptionTracker).to have_received(:new).with(error, account: account)
           expect(conversation.reload.status).to eq('pending')
           expect(conversation.messages.outgoing.last.content).to eq('Hey, welcome to Captain Specs')
           expect(account.reload.usage_limits[:captain][:responses][:consumed]).to eq(1)
@@ -592,7 +592,7 @@ RSpec.describe Captain::Conversation::ResponseBuilderJob, type: :job do
 
           content = conversation.messages.outgoing.last.content
           expect(content).to eq('Hey, welcome to Captain V2 [[1](https://help.example.com/guides/reset_%28new%29)]')
-          expect(ChatwootMarkdownRenderer.new(content).render_message.to_s).to include(
+          expect(WoodeskMarkdownRenderer.new(content).render_message.to_s).to include(
             '<a href="https://help.example.com/guides/reset_%28new%29">1</a>'
           )
         end
@@ -613,7 +613,7 @@ RSpec.describe Captain::Conversation::ResponseBuilderJob, type: :job do
             'Continue with the next step. [[2](https://help.example.com/email)]'
           )
 
-          rendered_content = ChatwootMarkdownRenderer.new(content).render_message.to_s
+          rendered_content = WoodeskMarkdownRenderer.new(content).render_message.to_s
           expect(rendered_content).to include("</code></pre>\n<p>[<a href=\"https://help.example.com/password\">1</a>]</p>")
           expect(rendered_content).to include('<p>Continue with the next step.')
         end
@@ -928,7 +928,7 @@ RSpec.describe Captain::Conversation::ResponseBuilderJob, type: :job do
 
       it 'still delivers the reply when session capture fails' do
         allow(Captain::AgentSession).to receive(:create!).and_raise(StandardError, 'capture failed')
-        allow(ChatwootExceptionTracker).to receive(:new).and_call_original
+        allow(WoodeskExceptionTracker).to receive(:new).and_call_original
 
         expect do
           described_class.perform_now(conversation, assistant)
@@ -937,7 +937,7 @@ RSpec.describe Captain::Conversation::ResponseBuilderJob, type: :job do
         expect(conversation.messages.outgoing.count).to eq(1)
         expect(conversation.messages.outgoing.last.content).to eq('Hey, welcome to Captain V2')
         expect(conversation.reload.status).to eq('pending')
-        expect(ChatwootExceptionTracker).to have_received(:new)
+        expect(WoodeskExceptionTracker).to have_received(:new)
       end
     end
 
@@ -1077,7 +1077,7 @@ RSpec.describe Captain::Conversation::ResponseBuilderJob, type: :job do
         allow(mock_message_builder).to receive(:generate_content)
           .and_raise(StandardError, 'Max retries exceeded')
 
-        expect(ChatwootExceptionTracker).to receive(:new).and_call_original
+        expect(WoodeskExceptionTracker).to receive(:new).and_call_original
 
         described_class.perform_now(conversation, assistant)
 
@@ -1093,7 +1093,7 @@ RSpec.describe Captain::Conversation::ResponseBuilderJob, type: :job do
       end
 
       it 'handles error and triggers handoff' do
-        expect(ChatwootExceptionTracker).to receive(:new)
+        expect(WoodeskExceptionTracker).to receive(:new)
           .with(standard_error, account: account)
           .and_call_original
 
